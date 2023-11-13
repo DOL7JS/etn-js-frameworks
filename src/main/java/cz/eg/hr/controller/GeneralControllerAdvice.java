@@ -17,10 +17,9 @@ public class GeneralControllerAdvice {
     public ResponseEntity<Errors> handleValidationException(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
         List<ValidationError> errorList = result.getFieldErrors().stream()
-            .map(e -> new ValidationError(e.getField(), e.getCode()))
+            .map(e -> new ValidationError(e.getField(), e.getDefaultMessage()))
             .toList();
 
         return ResponseEntity.badRequest().body(new Errors(errorList));
     }
-
 }

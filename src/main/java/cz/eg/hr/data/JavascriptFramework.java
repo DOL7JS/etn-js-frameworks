@@ -1,10 +1,8 @@
 package cz.eg.hr.data;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 public class JavascriptFramework {
@@ -15,6 +13,10 @@ public class JavascriptFramework {
 
     @Column(nullable = false, length = 30)
     private String name;
+
+    @OneToMany(mappedBy = "javascriptFramework", cascade = CascadeType.REMOVE)
+    private Set<Version> versions;
+
 
     public JavascriptFramework() {
     }
@@ -37,6 +39,14 @@ public class JavascriptFramework {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Version> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(Set<Version> versions) {
+        this.versions = versions;
     }
 
     @Override
