@@ -67,7 +67,7 @@ public class JavascriptFrameworkService {
             throw new IllegalArgumentException("JavascriptFrameworkUpdateDto is null");
         }
         if (javascriptFrameworkRepository.existsByName(javascriptFrameworkUpdateDto.getName())) {
-            throw new IllegalArgumentException("Framework " + javascriptFrameworkUpdateDto.getName() + "already exists.");
+            throw new IllegalArgumentException("Framework " + javascriptFrameworkUpdateDto.getName() + " already exists.");
         }
         JavascriptFramework javascriptFramework = javascriptFrameworkRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Framework with id " + id + " not found."));
         javascriptFramework.setName(javascriptFrameworkUpdateDto.getName());

@@ -25,8 +25,6 @@ dependencies {
     implementation 'org.hibernate.search:hibernate-search-mapper-orm-orm6:6.2.2.Final'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.skyscreamer:jsonassert:1.5.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 test {
