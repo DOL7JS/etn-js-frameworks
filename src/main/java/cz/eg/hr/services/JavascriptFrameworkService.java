@@ -63,6 +63,9 @@ public class JavascriptFrameworkService {
     }
 
     public JavascriptFramework updateJavascriptFramework(Long id, JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto) {
+        if (javascriptFrameworkUpdateDto == null) {
+            throw new IllegalArgumentException("JavascriptFrameworkUpdateDto is null");
+        }
         if (javascriptFrameworkRepository.existsByName(javascriptFrameworkUpdateDto.getName())) {
             throw new IllegalArgumentException("Framework " + javascriptFrameworkUpdateDto.getName() + "already exists.");
         }

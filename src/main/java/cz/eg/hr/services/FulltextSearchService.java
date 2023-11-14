@@ -16,10 +16,7 @@ public class FulltextSearchService {
 
     public FulltextSearchService(EntityManagerFactory entityManagerFactory) throws InterruptedException {
         this.entityManagerFactory = entityManagerFactory;
-        EntityManager em = this.entityManagerFactory.createEntityManager();
-        SearchSession searchSession = Search.session(em);
-        MassIndexer massIndexer = searchSession.massIndexer();
-        massIndexer.startAndWait();
+
     }
 
     public List fulltextSearch(String[] fields, String text, Class<?>[] types) {
