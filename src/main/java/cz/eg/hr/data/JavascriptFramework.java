@@ -1,9 +1,12 @@
 package cz.eg.hr.data;
 
 import jakarta.persistence.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.util.Set;
 
+@Indexed(index = "idx_js")
 @Entity
 public class JavascriptFramework {
 
@@ -12,9 +15,10 @@ public class JavascriptFramework {
     private Long id;
 
     @Column(nullable = false, length = 30)
+    @FullTextField
     private String name;
 
-    @OneToMany(mappedBy = "javascriptFramework", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "javascriptFramework", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Version> versions;
 
 

@@ -1,6 +1,7 @@
 package cz.eg.hr.dtos;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 
 import java.time.LocalDate;
@@ -15,6 +16,12 @@ public class VersionInDto {
     private Integer stars;
 
     public VersionInDto() {
+    }
+
+    public VersionInDto(String versionNumber, LocalDate endOfSupport, Integer stars) {
+        this.versionNumber = versionNumber;
+        this.endOfSupport = endOfSupport;
+        this.stars = stars;
     }
 
     public String getVersionNumber() {

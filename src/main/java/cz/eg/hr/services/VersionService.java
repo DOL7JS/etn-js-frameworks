@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
+import java.util.Set;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -19,11 +19,13 @@ public class VersionService {
 
     private final VersionRepository versionRepository;
     private final ModelMapper modelMapper;
-    TypeMap<Version, VersionOutDto> propertyMapper;
+    private final TypeMap<Version, VersionOutDto> propertyMapper;
+    private final FulltextSearchService fulltextSearchService;
 
-    public VersionService(VersionRepository versionRepository, ModelMapper modelMapperIn) {
+    public VersionService(VersionRepository versionRepository, ModelMapper modelMapperIn, FulltextSearchService fulltextSearchService) {
         this.versionRepository = versionRepository;
         this.modelMapper = modelMapperIn;
+        this.fulltextSearchService = fulltextSearchService;
         propertyMapper = modelMapper.createTypeMap(Version.class, VersionOutDto.class);
         propertyMapper.addMappings(modelMapper -> modelMapper.map(source -> source.getJavascriptFramework().getName(), VersionOutDto::setJavascriptFramework));
     }
@@ -41,7 +43,8 @@ public class VersionService {
     public Version updateJavascriptFrameworkVersion(Long id, VersionInDto versionInDto) {
         Version version = versionRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Version with id " + id + " not found."));
         JavascriptFramework javascriptFramework = version.getJavascriptFramework();
-        boolean versionAlreadyExists = javascriptFramework.getVersions().stream().anyMatch(v -> v.getVersionNumber().equals(versionInDto.getVersionNumber()) && !v.getId().equals(id));
+        Set<Version> versions = javascriptFramework.getVersions();
+        boolean versionAlreadyExists = versions.stream().anyMatch(v -> v.getVersionNumber().equals(versionInDto.getVersionNumber()) && !v.getId().equals(id));
         if (versionAlreadyExists) {
             throw new IllegalArgumentException("Version " + version.getVersionNumber() + " already exists in js framework " + javascriptFramework.getName());
         }
@@ -55,5 +58,9 @@ public class VersionService {
         if (versionRepository.existsById(id)) {
             versionRepository.deleteById(id);
         }
+    }
+
+    public List fulltextSearch(String text) {
+        return fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, text, new Class[]{Version.class});
     }
 }

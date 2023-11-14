@@ -19,16 +19,15 @@ public class JavaScriptFrameworkInputDto {
     public JavaScriptFrameworkInputDto() {
     }
 
-    public JavaScriptFrameworkInputDto(String name, String versionNumber) {
-        this.name = name;
-        this.versionNumber = versionNumber;
-    }
-
     public JavaScriptFrameworkInputDto(String name, String versionNumber, LocalDate endOfSupport, int stars) {
         this.name = name;
         this.versionNumber = versionNumber;
         this.endOfSupport = endOfSupport;
         this.stars = stars;
+    }
+
+    public JavaScriptFrameworkInputDto(String name) {
+        this.name = name;
     }
 
     public String getName() {

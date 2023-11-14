@@ -1,18 +1,28 @@
 package cz.eg.hr.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.eg.hr.bridges.IntegerValueBridge;
+import cz.eg.hr.bridges.LocalDateBridge;
 import jakarta.persistence.*;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.time.LocalDate;
 
 @Entity
+@Indexed(index = "idx_version")
 public class Version {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @FullTextField
     private String versionNumber;
+    @GenericField(valueBridge = @ValueBridgeRef(type = LocalDateBridge.class))
     private LocalDate endOfSupport;
-    private int stars;
+    @GenericField(valueBridge = @ValueBridgeRef(type = IntegerValueBridge.class))
+    private Integer stars;
 
     @ManyToOne()
     @JoinColumn(nullable = false)
@@ -20,10 +30,6 @@ public class Version {
     private JavascriptFramework javascriptFramework;
 
     public Version() {
-    }
-
-    public Version(String versionNumber) {
-        this.versionNumber = versionNumber;
     }
 
     public Version(String versionNumber, LocalDate endOfSupport, int stars) {

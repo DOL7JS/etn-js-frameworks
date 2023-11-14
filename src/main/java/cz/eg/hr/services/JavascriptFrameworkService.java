@@ -8,9 +8,9 @@ import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import cz.eg.hr.repository.JavascriptFrameworkRepository;
 import cz.eg.hr.repository.VersionRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -19,10 +19,12 @@ public class JavascriptFrameworkService {
 
     private final JavascriptFrameworkRepository javascriptFrameworkRepository;
     private final VersionRepository versionRepository;
+    private final FulltextSearchService fulltextSearchService;
 
-    public JavascriptFrameworkService(JavascriptFrameworkRepository javascriptFrameworkRepository, VersionRepository versionRepository) {
+    public JavascriptFrameworkService(JavascriptFrameworkRepository javascriptFrameworkRepository, VersionRepository versionRepository, FulltextSearchService fulltextSearchService) {
         this.javascriptFrameworkRepository = javascriptFrameworkRepository;
         this.versionRepository = versionRepository;
+        this.fulltextSearchService = fulltextSearchService;
     }
 
     public Iterable<JavascriptFramework> getAllJavascriptFrameworks() {
@@ -73,6 +75,10 @@ public class JavascriptFrameworkService {
         if (javascriptFrameworkRepository.existsById(id)) {
             javascriptFrameworkRepository.deleteById(id);
         }
+    }
+
+    public List fulltextSearch(String text) {
+        return fulltextSearchService.fulltextSearch(new String[]{"name"}, text, new Class[]{JavascriptFramework.class});
     }
 }
 

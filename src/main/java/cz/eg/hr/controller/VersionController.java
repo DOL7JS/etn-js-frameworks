@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("version")
 public class VersionController {
@@ -35,5 +36,10 @@ public class VersionController {
     @DeleteMapping("{id}")
     public void deleteVersion(@PathVariable Long id) {
         versionService.deleteVersion(id);
+    }
+
+    @GetMapping("fulltextSearch")
+    public ResponseEntity<?> fulltextSearch(@RequestParam String text) {
+        return ResponseEntity.ok(versionService.fulltextSearch(text));
     }
 }

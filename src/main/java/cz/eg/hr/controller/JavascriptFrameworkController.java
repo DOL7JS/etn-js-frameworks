@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RequestMapping("framework")
 @RestController
 public class JavascriptFrameworkController {
@@ -49,6 +50,11 @@ public class JavascriptFrameworkController {
     @DeleteMapping("{id}")
     public void deleteFramework(@PathVariable Long id) {
         javascriptFrameworkService.deleteFramework(id);
+    }
+
+    @GetMapping("fulltextSearch")
+    public ResponseEntity<?> fulltextSearch(@RequestParam String text) {
+        return ResponseEntity.ok(javascriptFrameworkService.fulltextSearch(text));
     }
 
 }
