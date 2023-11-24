@@ -70,7 +70,7 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
     <td>Dodělání interface(service, controller) + javadoc</td>
     <td>45 minut</td>
     <td>1 hodina a 45 minut</td>
-    <td></td>
+    <td>Zdržení kvůli psaní javadoc - nečekal jsem že mi to zabere tolik času</td>
   </tr>
   <tr>
     <td>Testy - repository, services, controllers</td>
