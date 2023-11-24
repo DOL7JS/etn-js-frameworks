@@ -22,6 +22,12 @@ public class VersionOutDto {
     public VersionOutDto() {
     }
 
+    public VersionOutDto(String versionNumber, LocalDate endOfSupport, Integer stars) {
+        this.versionNumber = versionNumber;
+        this.endOfSupport = endOfSupport;
+        this.stars = stars;
+    }
+
     public Long getId() {
         return id;
     }

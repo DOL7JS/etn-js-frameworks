@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("framework")
 @RestController
-public class JavascriptFrameworkController {
+public class JavascriptFrameworkController implements IJavascriptFrameworkController {
 
     private final JavascriptFrameworkService javascriptFrameworkService;
 
@@ -22,35 +22,42 @@ public class JavascriptFrameworkController {
         this.javascriptFrameworkService = javascriptFrameworkService;
     }
 
+
     @GetMapping("")
-    public Iterable<JavascriptFramework> getAllFrameworks() {
-        return javascriptFrameworkService.getAllJavascriptFrameworks();
+    public ResponseEntity<Iterable<JavascriptFramework>> getAllFrameworks() {
+        return ResponseEntity.ok(javascriptFrameworkService.getAllJavascriptFrameworks());
     }
 
+
     @GetMapping("{id}")
-    public ResponseEntity<?> getFramework(@PathVariable Long id) {
+    public ResponseEntity<JavascriptFramework> getFramework(@PathVariable Long id) {
         return ResponseEntity.ok(javascriptFrameworkService.getJavascriptFramework(id));
     }
+
 
     @PostMapping("")
     public ResponseEntity<?> addFramework(@RequestBody @Valid JavaScriptFrameworkInputDto javaScriptFrameworkInputDto) {
         return ResponseEntity.ok(javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto));
     }
 
+
     @PostMapping("{id}")
     public ResponseEntity<?> addVersionToFramework(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto) {
         return ResponseEntity.ok(javascriptFrameworkService.addVersionToJavascriptFramework(id, versionInDto));
     }
 
-    @PutMapping("{id}")
+
+    @PatchMapping("{id}")
     public ResponseEntity<?> updateFramework(@PathVariable Long id, @RequestBody @Valid JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto) {
         return ResponseEntity.ok(javascriptFrameworkService.updateJavascriptFramework(id, javascriptFrameworkUpdateDto));
     }
+
 
     @DeleteMapping("{id}")
     public void deleteFramework(@PathVariable Long id) {
         javascriptFrameworkService.deleteFramework(id);
     }
+
 
     @GetMapping("fulltextSearch")
     public ResponseEntity<?> fulltextSearch(@RequestParam String text) {

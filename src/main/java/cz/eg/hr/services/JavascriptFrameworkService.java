@@ -8,14 +8,23 @@ import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import cz.eg.hr.repository.JavascriptFrameworkRepository;
 import cz.eg.hr.repository.VersionRepository;
+import cz.eg.hr.rest.exceptions.EntityAlreadyExistsException;
+import cz.eg.hr.rest.exceptions.EntityNotFoundException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Service class for CRUD operations on JavascriptFramework entity and add Version to JavascriptFramework.
+ * This class also can do fulltext search in JavascriptFramework table in database.
+ *
+ * @author Petr Dolejs
+ */
 @Service
-public class JavascriptFrameworkService {
+public class JavascriptFrameworkService implements IJavascriptFrameworkService {
 
     private final JavascriptFrameworkRepository javascriptFrameworkRepository;
     private final VersionRepository versionRepository;
@@ -27,17 +36,39 @@ public class JavascriptFrameworkService {
         this.fulltextSearchService = fulltextSearchService;
     }
 
+    /**
+     * Method to get all JavascriptFrameworks in database
+     *
+     * @return All JavascriptFrameworks in database
+     */
     public Iterable<JavascriptFramework> getAllJavascriptFrameworks() {
         return javascriptFrameworkRepository.findAll();
     }
 
+    /**
+     * Method to get one JavascriptFrameworks by id
+     *
+     * @param id ID of JavascriptFramework to be returned
+     * @return All {@link JavascriptFramework} if is found by id
+     * @throws EntityNotFoundException If entity JavascriptFramework is not found
+     */
     public JavascriptFramework getJavascriptFramework(Long id) {
-        return javascriptFrameworkRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Framework with id " + id + " not found."));
+        return javascriptFrameworkRepository.findById(id).orElseThrow(() -> {
+            throw new EntityNotFoundException("Framework with id " + id + " not found.");
+        });
     }
 
-    public JavascriptFramework addJavascriptFramework(JavaScriptFrameworkInputDto javaScriptFrameworkInputDto) {
+    /**
+     * Method to add JavascriptFramework to database if JavascriptFramework with same name
+     * does not exist already
+     *
+     * @param javaScriptFrameworkInputDto DTO with values that will be added to JavascriptFramework table
+     * @return Created JavascriptFramework in database
+     * @throws EntityAlreadyExistsException If name of JavascriptFramework already exists
+     */
+    public JavascriptFramework addJavascriptFramework(@NotNull JavaScriptFrameworkInputDto javaScriptFrameworkInputDto) {
         if (javascriptFrameworkRepository.existsByName(javaScriptFrameworkInputDto.getName())) {
-            throw new IllegalArgumentException("Framework " + javaScriptFrameworkInputDto.getName() + " already exists.");
+            throw new EntityAlreadyExistsException("Framework " + javaScriptFrameworkInputDto.getName() + " already exists.");
         }
         JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(new JavascriptFramework(javaScriptFrameworkInputDto.getName()));
         if (javaScriptFrameworkInputDto.getVersionNumber() != null) {
@@ -49,11 +80,19 @@ public class JavascriptFrameworkService {
         return javascriptFrameworkSaved;
     }
 
-    public JavascriptFramework addVersionToJavascriptFramework(Long javascriptFrameworkId, VersionInDto versionInDto) {
-        JavascriptFramework javascriptFramework = javascriptFrameworkRepository.findById(javascriptFrameworkId).orElseThrow(() -> new NoSuchElementException("Framework with id " + javascriptFrameworkId + " not found."));
-        boolean versionAlreadyExists = javascriptFramework.getVersions().stream().anyMatch(version -> version.getVersionNumber().equals(versionInDto.getVersionNumber()));
+    /**
+     * Method to add Version to JavascriptFramework if Version does not exist in current JavascriptFramework
+     *
+     * @param javascriptFrameworkId ID of JavascriptFramework to which will be Version added
+     * @param versionInDto          Version to be added to JavascriptFramework
+     * @return JavascriptFramework to which was added new Version
+     * @throws EntityAlreadyExistsException If Version exists in current Javascript framework with same versionNumber
+     */
+    public JavascriptFramework addVersionToJavascriptFramework(Long javascriptFrameworkId, @NotNull VersionInDto versionInDto) {
+        JavascriptFramework javascriptFramework = javascriptFrameworkRepository.findById(javascriptFrameworkId).orElseThrow(() -> new EntityNotFoundException("Framework with id " + javascriptFrameworkId + " not found."));
+        boolean versionAlreadyExists = versionRepository.existsByVersionNumberAndJavascriptFramework(versionInDto.getVersionNumber(), javascriptFramework);
         if (versionAlreadyExists) {
-            throw new IllegalArgumentException("Version " + versionInDto.getVersionNumber() + " already exists in js framework " + javascriptFramework.getName());
+            throw new EntityAlreadyExistsException("Version " + versionInDto.getVersionNumber() + " already exists in js framework " + javascriptFramework.getName());
         }
         Version version = new Version(versionInDto.getVersionNumber(), versionInDto.getEndOfSupport(), versionInDto.getStars());
         version.setJavascriptFramework(javascriptFramework);
@@ -62,25 +101,43 @@ public class JavascriptFrameworkService {
         return javascriptFramework;
     }
 
-    public JavascriptFramework updateJavascriptFramework(Long id, JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto) {
-        if (javascriptFrameworkUpdateDto == null) {
-            throw new IllegalArgumentException("JavascriptFrameworkUpdateDto is null");
-        }
+    /**
+     * Method to update name of JavascriptFramework if is found
+     *
+     * @param id                           ID of JavascriptFramework to be updated
+     * @param javascriptFrameworkUpdateDto DTO with values that will update JavascriptFramework
+     * @return Updated JavascriptFramework
+     * @throws EntityAlreadyExistsException If name of JavascriptFramework already exists
+     */
+    public JavascriptFramework updateJavascriptFramework(Long id, @NotNull JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto) {
+        Objects.requireNonNull(javascriptFrameworkUpdateDto);
+
         if (javascriptFrameworkRepository.existsByName(javascriptFrameworkUpdateDto.getName())) {
-            throw new IllegalArgumentException("Framework " + javascriptFrameworkUpdateDto.getName() + " already exists.");
+            throw new EntityAlreadyExistsException("Framework " + javascriptFrameworkUpdateDto.getName() + " already exists.");
         }
-        JavascriptFramework javascriptFramework = javascriptFrameworkRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Framework with id " + id + " not found."));
+        JavascriptFramework javascriptFramework = javascriptFrameworkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Framework with id " + id + " not found."));
         javascriptFramework.setName(javascriptFrameworkUpdateDto.getName());
         return javascriptFrameworkRepository.save(javascriptFramework);
     }
 
+    /**
+     * Delete JavascriptFramework by id if exists
+     *
+     * @param id ID of JavascriptFramework to be deleted.
+     */
     public void deleteFramework(Long id) {
         if (javascriptFrameworkRepository.existsById(id)) {
             javascriptFrameworkRepository.deleteById(id);
         }
     }
 
-    public List fulltextSearch(String text) {
+    /**
+     * Fulltext search in table JavascriptFramework
+     *
+     * @param text Text to be searched in table
+     * @return List of found JavascriptFramework with corresponding values
+     */
+    public List<?> fulltextSearch(String text) {
         return fulltextSearchService.fulltextSearch(new String[]{"name"}, text, new Class[]{JavascriptFramework.class});
     }
 }

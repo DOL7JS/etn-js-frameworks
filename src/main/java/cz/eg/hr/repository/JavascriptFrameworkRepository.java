@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface JavascriptFrameworkRepository extends CrudRepository<JavascriptFramework, Long> {
     boolean existsByName(String name);
+
 }

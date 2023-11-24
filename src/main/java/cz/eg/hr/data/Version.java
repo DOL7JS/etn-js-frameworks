@@ -58,6 +58,10 @@ public class Version {
         return endOfSupport;
     }
 
+    public void setStars(Integer stars) {
+        this.stars = stars;
+    }
+
     public void setEndOfSupport(LocalDate endOfSupport) {
         this.endOfSupport = endOfSupport;
     }

@@ -3,6 +3,7 @@ package cz.eg.hr.data;
 import jakarta.persistence.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class JavascriptFramework {
     private String name;
 
     @OneToMany(mappedBy = "javascriptFramework", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @IndexedEmbedded
     private Set<Version> versions;
 
 
@@ -28,6 +30,7 @@ public class JavascriptFramework {
     public JavascriptFramework(String name) {
         this.name = name;
     }
+
 
     public Long getId() {
         return id;
