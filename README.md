@@ -39,6 +39,65 @@ Je potřeba mít nainstalované JDK 17. Preferujeme verzi OpenJDK z distribuce [
 ## Co hodnotíme
 
 Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není potřeba dopracovávat do zcela funkčního celku, ale samozřejmě inciativu oceníme. Očekáváme, že řešení zabere několik hodin až maximálně dva dny, více času nemá smysl tomu věnovat. Neočekáváme dodání do druhého dne, spíše počítáme s řešením v klidu přes víkend. Řešení slouží jako podklad pro diskuzi na pohovoru.
+## Odhad práce
+
+<table>
+<thead>
+  <tr>
+    <th>Úkol</th>
+    <th>Odhad pracnosti</th>
+    <th>Skutečný čas</th>
+    <th>Poznámka</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>Využití ControllerAdvice</td>
+    <td rowspan=4>1 hodina</td>
+    <td rowspan=4>1 hodina</td>
+    <td rowspan=4></td>  
+  </tr>
+  <tr>
+    <td>Návratové http kódy</td>
+  </tr>
+  <tr>
+    <td>Použití PATCH</td>
+  </tr>
+  <tr>
+    <td>Optimalizace kontroly existujících verzí frameworku</td>
+  </tr>
+  <tr>
+    <td>Dodělání interface(service, controller) + javadoc</td>
+    <td>45 minut</td>
+    <td>1 hodina a 45 minut</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Testy - repository, services, controllers</td>
+    <td>5 - 6 hodin</td>
+    <td>4 hodiny</td>
+    <td>Problém: Injektování ModelMapperu - po pár minutách na internetu použito @Spy </td>
+  </tr>
+  <tr>
+    <td>Refactoring fulltext search</td>
+    <td>Bude doplněno</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Oddělení entit od DTO</td>
+    <td>Bude doplněno</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Generické typy v ResponseEntity a kolekcí</td>
+    <td>Bude doplněno</td>
+    <td></td>
+    <td></td>
+  </tr>
+</tbody>
+</table>
 
 ---
 
