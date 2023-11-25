@@ -4,54 +4,46 @@ import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.data.Version;
 import cz.eg.hr.dtos.VersionInDto;
 import cz.eg.hr.dtos.VersionOutDto;
-import cz.eg.hr.repository.JavascriptFrameworkRepository;
 import cz.eg.hr.repository.VersionRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import cz.eg.hr.rest.exceptions.EntityAlreadyExistsException;
+import cz.eg.hr.rest.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
 @ActiveProfiles(profiles = "test")
 public class VersionServiceTest {
 
-    @Autowired
+    @InjectMocks
     private VersionService versionService;
-    @Autowired
+    @Mock
     private VersionRepository versionRepository;
-    @Autowired
-    private JavascriptFrameworkRepository javascriptFrameworkRepository;
-
-    @BeforeEach
-    @AfterEach
-    void clearData() {
-        versionRepository.deleteAll();
-        javascriptFrameworkRepository.deleteAll();
-
-    }
+    @Spy
+    private ModelMapper modelMapper;
+    @Mock
+    private FulltextSearchService fulltextSearchService;
 
     @Test
-    public void getAllVersionsTest() {
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
+    public void whenGetAllVersions_thenReturnListOfAllVersions_test() {
         Version v1 = new Version("1.1", LocalDate.of(2020, 1, 1), 4);
         Version v2 = new Version("1.2", LocalDate.of(2021, 1, 1), 5);
-        javascriptFramework.setVersions(Set.of(v1, v2));
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
-        v1.setJavascriptFramework(javascriptFrameworkSaved);
-        v2.setJavascriptFramework(javascriptFrameworkSaved);
-        versionRepository.save(v1);
-        versionRepository.save(v2);
+
+        when(versionRepository.findAll()).thenReturn(List.of(v1, v2));
 
         Iterable<VersionOutDto> allVersions = versionService.getAllVersions();
 
@@ -61,114 +53,100 @@ public class VersionServiceTest {
     }
 
     @Test
-    public void getVersionByIdTest() {
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
+    public void givenVersionID_whenGetVersion_thenReturnVersionByID_test() {
         Version v1 = new Version("1.1", LocalDate.of(2020, 1, 1), 4);
-        Version v2 = new Version("1.2", LocalDate.of(2021, 1, 1), 5);
-        javascriptFramework.setVersions(Set.of(v1, v2));
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
-        v1.setJavascriptFramework(javascriptFrameworkSaved);
-        v2.setJavascriptFramework(javascriptFrameworkSaved);
-        Version versionSaved = versionRepository.save(v1);
-        versionRepository.save(v2);
+        v1.setId(1L);
 
-        VersionOutDto version = versionService.getVersion(versionSaved.getId());
+        when(versionRepository.findById(v1.getId())).thenReturn(Optional.of(v1));
+        VersionOutDto version = versionService.getVersion(v1.getId());
 
-        assertEquals(versionSaved.getId(), version.getId());
-        assertEquals(versionSaved.getVersionNumber(), version.getVersionNumber());
-        assertEquals(versionSaved.getStars(), version.getStars());
-        assertEquals(versionSaved.getEndOfSupport(), version.getEndOfSupport());
-        assertEquals(versionSaved.getJavascriptFramework().getName(), version.getJavascriptFramework());
+        assertEquals(v1.getId(), version.getId());
+        assertEquals(v1.getVersionNumber(), version.getVersionNumber());
+        assertEquals(v1.getStars(), version.getStars());
+        assertEquals(v1.getEndOfSupport(), version.getEndOfSupport());
     }
 
     @Test
-    public void getVersionByIdNotFoundTest() {
+    public void givenWrongVersionID_whenGetVersion_thenReturnExceptionEntityNotFoundException_Test() {
 
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             versionService.getVersion(1L);
         });
     }
 
     @Test
-    public void updateVersionTest() {
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
-        Version v1 = new Version("1.1", LocalDate.of(2020, 1, 1), 1);
-        javascriptFramework.setVersions(Set.of(v1));
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
-        v1.setJavascriptFramework(javascriptFrameworkSaved);
-        Version versionSaved = versionRepository.save(v1);
+    public void givenVersionInDto_whenUpdateJavascriptVersion_thenReturnUpdatedJavascriptVersion_Test() {
         VersionInDto versionInDto = new VersionInDto("2.2", LocalDate.of(2021, 1, 1), 5);
+        Version v1 = new Version("1.1", LocalDate.of(2020, 1, 1), 1);
+        v1.setId(1L);
+        Version versionUpdated = new Version(versionInDto.getVersionNumber(), versionInDto.getEndOfSupport(), versionInDto.getStars());
+        versionUpdated.setId(v1.getId());
 
-        Version version = versionService.updateJavascriptFrameworkVersion(versionSaved.getId(), versionInDto);
+        when(versionRepository.findById(v1.getId())).thenReturn(Optional.of(v1));
+        when(versionRepository.existsByVersionNumberAndJavascriptFrameworkAndIdIsNot(anyString(), any(JavascriptFramework.class), anyLong())).thenReturn(false);
+        when(versionRepository.save(any(Version.class))).thenReturn(versionUpdated);
 
-        assertEquals(versionSaved.getId(), version.getId());
-        assertEquals(versionInDto.getVersionNumber(), version.getVersionNumber());
-        assertEquals(versionInDto.getStars(), version.getStars());
-        assertEquals(versionInDto.getEndOfSupport(), version.getEndOfSupport());
+        Version version = versionService.updateJavascriptFrameworkVersion(v1.getId(), versionInDto);
+
+        assertEquals(versionUpdated.getId(), version.getId());
+        assertEquals(versionUpdated.getVersionNumber(), version.getVersionNumber());
+        assertEquals(versionUpdated.getStars(), version.getStars());
+        assertEquals(versionUpdated.getEndOfSupport(), version.getEndOfSupport());
     }
 
     @Test
-    public void updateVersionNotFoundTest() {
+    public void givenWrongVersionID_whenUpdateJavascriptVersion_thenReturnEntityNotFoundException_test() {
         VersionInDto versionInDto = new VersionInDto("2.2", LocalDate.of(2021, 1, 1), 5);
 
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             versionService.updateJavascriptFrameworkVersion(1L, versionInDto);
         });
     }
 
     @Test
-    public void updateVersionAlreadyExistsTest() {
+    public void givenVersionThatAlreadyExistsInJavascript_whenUpdateJavascriptVersion_thenReturnEntityAlreadyExistsException_test() {
         JavascriptFramework javascriptFramework = new JavascriptFramework("React");
+        VersionInDto versionInDto = new VersionInDto("2.2", LocalDate.of(2021, 1, 1), 5);
         Version v1 = new Version("1.1", LocalDate.of(2020, 1, 1), 1);
-        Version v2 = new Version("1.2", LocalDate.of(2020, 1, 1), 1);
-        javascriptFramework.setVersions(Set.of(v1, v2));
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
-        v1.setJavascriptFramework(javascriptFrameworkSaved);
-        v2.setJavascriptFramework(javascriptFrameworkSaved);
-        Version versionSaved = versionRepository.save(v1);
-        versionRepository.save(v2);
-        VersionInDto versionInDto = new VersionInDto("1.2", LocalDate.of(2021, 1, 1), 5);
+        v1.setId(1L);
+        v1.setJavascriptFramework(javascriptFramework);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            versionService.updateJavascriptFrameworkVersion(versionSaved.getId(), versionInDto);
+        when(versionRepository.findById(v1.getId())).thenReturn(Optional.of(v1));
+        when(versionRepository.existsByVersionNumberAndJavascriptFrameworkAndIdIsNot(anyString(), any(JavascriptFramework.class), anyLong())).thenReturn(true);
+
+        assertThrows(EntityAlreadyExistsException.class, () -> {
+            versionService.updateJavascriptFrameworkVersion(v1.getId(), versionInDto);
         });
 
     }
 
     @Test
-    public void deleteVersionTest() {
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
-        Version v1 = new Version("1.1", LocalDate.of(2020, 1, 1), 1);
-        javascriptFramework.setVersions(Set.of(v1));
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
-        v1.setJavascriptFramework(javascriptFrameworkSaved);
-        Version versionSaved = versionRepository.save(v1);
-        assertEquals(1, ((Collection<?>) versionRepository.findAll()).size());
+    public void givenVersionID_whenDeleteVersion_thenVerifyExecutionOfDeleteByID_test() {
+        when(versionRepository.existsById(anyLong())).thenReturn(true);
 
-        versionService.deleteVersion(versionSaved.getId());
+        versionService.deleteVersion(1L);
 
-        assertEquals(0, ((Collection<?>) versionRepository.findAll()).size());
+        verify(versionRepository, times(1)).deleteById(1L);
+        verify(versionRepository, times(0)).deleteById(2L);
     }
 
     @Test
-    public void fulltextSearchVersionTest() {
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
+    public void givenVersionID_whenDeleteVersion_thenVerifyNotExecutionOfDeleteByID_test() {
+        when(versionRepository.existsById(anyLong())).thenReturn(false);
+
+        versionService.deleteVersion(1L);
+
+        verify(versionRepository, times(0)).deleteById(anyLong());
+    }
+
+    @Test
+    public void givenSearchText_whenFulltextSearch_thenReturnListOfFoundVersion_test() {
         Version v1 = new Version("1.2.3.4", LocalDate.of(2020, 1, 1), 4);
-        Version v2 = new Version("1.1.1.2", LocalDate.of(2021, 1, 1), 5);
-        Version v3 = new Version("1.1.1.2", LocalDate.of(2021, 1, 1), 5);
-        javascriptFramework.setVersions(Set.of(v1, v2, v3));
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
-        v1.setJavascriptFramework(javascriptFrameworkSaved);
-        v2.setJavascriptFramework(javascriptFrameworkSaved);
-        v3.setJavascriptFramework(javascriptFrameworkSaved);
-        versionRepository.save(v1);
-        versionRepository.save(v2);
-        versionRepository.save(v3);
 
-        List list1 = versionService.fulltextSearch("1.1.1.");
-        List list2 = versionService.fulltextSearch("1.2.3.");
+        when(fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, v1.getVersionNumber(), new Class[]{Version.class})).thenReturn(List.of(v1));
 
-        assertEquals(2, list1.size());
-        assertEquals(1, list2.size());
+        List<?> list = versionService.fulltextSearch(v1.getVersionNumber());
+
+        assertEquals(1, list.size());
     }
 }

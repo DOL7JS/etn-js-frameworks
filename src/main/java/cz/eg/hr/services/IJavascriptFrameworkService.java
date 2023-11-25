@@ -22,5 +22,5 @@ public interface IJavascriptFrameworkService {
 
     public void deleteFramework(Long id);
 
-    public List<?> fulltextSearch(String text);
+    public List<Object> fulltextSearch(String text);
 }

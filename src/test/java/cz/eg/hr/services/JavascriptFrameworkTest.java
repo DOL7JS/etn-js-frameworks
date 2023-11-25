@@ -1,80 +1,86 @@
 package cz.eg.hr.services;
 
 import cz.eg.hr.data.JavascriptFramework;
+import cz.eg.hr.data.Version;
 import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
 import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import cz.eg.hr.repository.JavascriptFrameworkRepository;
 import cz.eg.hr.repository.VersionRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import cz.eg.hr.rest.exceptions.EntityAlreadyExistsException;
+import cz.eg.hr.rest.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles(profiles = "test")
 public class JavascriptFrameworkTest {
 
-    @Autowired
+    @InjectMocks
     private JavascriptFrameworkService javascriptFrameworkService;
-    @Autowired
+    @Mock
     private VersionRepository versionRepository;
-    @Autowired
+    @Mock
     private JavascriptFrameworkRepository javascriptFrameworkRepository;
-
-    @BeforeEach
-    @AfterEach
-    void clearData() {
-        versionRepository.deleteAll();
-        javascriptFrameworkRepository.deleteAll();
-    }
+    @Mock
+    private FulltextSearchService fulltextSearchService;
 
     @Test
-    public void getAllJavascriptFrameworksTest() {
+    public void whenGetAllJavascriptFrameworks_thenReturnListOfTwoJavascriptFrameworks_test() {
         JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
         JavascriptFramework javascriptFramework2 = new JavascriptFramework("Angular");
-        JavascriptFramework javascriptFrameworkSaved1 = javascriptFrameworkRepository.save(javascriptFramework1);
-        JavascriptFramework javascriptFrameworkSaved2 = javascriptFrameworkRepository.save(javascriptFramework2);
 
-        Iterable<JavascriptFramework> allFrameworks = javascriptFrameworkService.getAllJavascriptFrameworks();
+        when(javascriptFrameworkRepository.findAll()).thenReturn(List.of(javascriptFramework1, javascriptFramework2));
+
+        Iterable<?> allFrameworks = javascriptFrameworkService.getAllJavascriptFrameworks();
 
         assertEquals(2, ((Collection<?>) allFrameworks).size());
-        assertTrue(((Collection<JavascriptFramework>) allFrameworks).stream().anyMatch(js -> js.getId().equals(javascriptFrameworkSaved1.getId())));
-        assertTrue(((Collection<JavascriptFramework>) allFrameworks).stream().anyMatch(js -> js.getId().equals(javascriptFrameworkSaved2.getId())));
-        assertTrue(((Collection<JavascriptFramework>) allFrameworks).stream().anyMatch(js -> js.getName().equals(javascriptFrameworkSaved1.getName())));
-        assertTrue(((Collection<JavascriptFramework>) allFrameworks).stream().anyMatch(js -> js.getName().equals(javascriptFrameworkSaved2.getName())));
+        assertTrue(((Collection<?>) allFrameworks).stream().anyMatch(js -> js.equals(javascriptFramework1)));
+        assertTrue(((Collection<?>) allFrameworks).stream().anyMatch(js -> js.equals(javascriptFramework2)));
     }
 
     @Test
-    public void getJavascriptFrameworkByIdTest() {
+    public void givenJavascriptFrameworkID_whenGetJavascriptFramework_thenReturnJavascriptFrameworkById_test() {
         JavascriptFramework javascriptFramework = new JavascriptFramework("React");
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
+        javascriptFramework.setId(1L);
+        when(javascriptFrameworkRepository.findById(javascriptFramework.getId())).thenReturn(Optional.of(javascriptFramework));
+        JavascriptFramework javascriptFrameworkById = javascriptFrameworkService.getJavascriptFramework(javascriptFramework.getId());
 
-        JavascriptFramework javascriptFrameworkById = javascriptFrameworkService.getJavascriptFramework(javascriptFrameworkSaved.getId());
-
-        assertEquals(javascriptFrameworkSaved.getId(), javascriptFrameworkById.getId());
-        assertEquals(javascriptFrameworkSaved.getName(), javascriptFrameworkById.getName());
+        assertEquals(javascriptFramework.getId(), javascriptFrameworkById.getId());
+        assertEquals(javascriptFramework.getName(), javascriptFrameworkById.getName());
     }
 
     @Test
-    public void getJavascriptFrameworkByIdNotFoundTest() {
-        assertThrows(NoSuchElementException.class, () -> {
+    public void givenWrongJavascriptFrameworkID_whenGetJavascriptFramework_thenReturnEntityNotFoundException_test() {
+        assertThrows(EntityNotFoundException.class, () -> {
             javascriptFrameworkService.getJavascriptFramework(1L);
         });
     }
 
     @Test
-    public void addJavascriptFrameworkWithVersionTest() {
+    public void givenJavaScriptFrameworkInputDtoWithVersion_whenAddJavascriptFramework_thenReturnNewJavascriptFramework_test() {
         JavaScriptFrameworkInputDto javaScriptFrameworkInputDto = new JavaScriptFrameworkInputDto("React", "1.1", LocalDate.of(2020, 1, 1), 1);
+        JavascriptFramework javascriptFramework1 = new JavascriptFramework(javaScriptFrameworkInputDto.getName());
+        Version version = new Version(javaScriptFrameworkInputDto.getVersionNumber(), javaScriptFrameworkInputDto.getEndOfSupport(), javaScriptFrameworkInputDto.getStars());
+        version.setJavascriptFramework(javascriptFramework1);
+
+        when(javascriptFrameworkRepository.save(any(JavascriptFramework.class))).thenReturn(javascriptFramework1);
+        when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(false);
+        when(versionRepository.save(any(Version.class))).thenReturn(version);
 
         JavascriptFramework javascriptFramework = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
 
@@ -86,8 +92,10 @@ public class JavascriptFrameworkTest {
     }
 
     @Test
-    public void addJavascriptFrameworkSoloTest() {
+    public void givenJavaScriptFrameworkInputDtoWithName_whenAddJavascriptFramework_thenReturnNewJavascriptFramework_test() {
         JavaScriptFrameworkInputDto javaScriptFrameworkInputDto = new JavaScriptFrameworkInputDto("React");
+        when(javascriptFrameworkRepository.save(any(JavascriptFramework.class))).thenReturn(new JavascriptFramework(javaScriptFrameworkInputDto.getName()));
+        when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(false);
 
         JavascriptFramework javascriptFramework = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
 
@@ -96,21 +104,28 @@ public class JavascriptFrameworkTest {
     }
 
     @Test
-    public void addJavascriptFrameworkAlreadyExistsTest() {
+    public void givenJavaScriptFrameworkInputDtoWithName_whenAddJavascriptFramework_thenReturnEntityAlreadyExistsException_test() {
         JavaScriptFrameworkInputDto javaScriptFrameworkInputDto = new JavaScriptFrameworkInputDto("React");
-        javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
-        assertThrows(IllegalArgumentException.class, () -> {
+
+        when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(true);
+
+        assertThrows(EntityAlreadyExistsException.class, () -> {
             javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
         });
     }
 
     @Test
-    public void addVersionToJavascriptFrameworkTest() {
+    public void givenVersionInDto_whenAddVersionToJavascriptFramework_thenReturnJavascriptFrameworkWithAddedVersion_test() {
         JavascriptFramework javascriptFramework = new JavascriptFramework("React");
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
+        javascriptFramework.setId(1L);
         VersionInDto versionInDto = new VersionInDto("1.1", LocalDate.of(2020, 1, 1), 4);
+        Version version = new Version("1.1", LocalDate.of(2020, 1, 1), 4);
+        javascriptFramework.setVersions(new HashSet<>());
+        when(javascriptFrameworkRepository.findById(1L)).thenReturn(Optional.of(javascriptFramework));
+        when(versionRepository.existsByVersionNumberAndJavascriptFramework(anyString(), any(JavascriptFramework.class))).thenReturn(false);
+        when(versionRepository.save(any(Version.class))).thenReturn(version);
 
-        JavascriptFramework javascriptFrameworkWithVersion = javascriptFrameworkService.addVersionToJavascriptFramework(javascriptFrameworkSaved.getId(), versionInDto);
+        JavascriptFramework javascriptFrameworkWithVersion = javascriptFrameworkService.addVersionToJavascriptFramework(javascriptFramework.getId(), versionInDto);
 
         assertNotNull(javascriptFrameworkWithVersion.getVersions());
         assertEquals(1, javascriptFrameworkWithVersion.getVersions().size());
@@ -120,95 +135,100 @@ public class JavascriptFrameworkTest {
     }
 
     @Test
-    public void addVersionToJavascriptFrameworkNotFoundTest() {
+    public void givenVersionInDto_whenAddVersionToJavascriptFramework_thenReturnEntityNotFoundException_test() {
         VersionInDto versionInDto = new VersionInDto("1.1", LocalDate.of(2020, 1, 1), 4);
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             javascriptFrameworkService.addVersionToJavascriptFramework(1L, versionInDto);
         });
     }
 
     @Test
-    public void addVersionToJavascriptFrameworkVersionAlreadyExistsTest() {
+    public void givenVersionInDto_whenAddVersionToJavascriptFramework_thenReturnEntityAlreadyExistsException_test() {
         JavascriptFramework javascriptFramework = new JavascriptFramework("React");
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
         VersionInDto versionInDto = new VersionInDto("1.1", LocalDate.of(2020, 1, 1), 4);
-        javascriptFrameworkService.addVersionToJavascriptFramework(javascriptFrameworkSaved.getId(), versionInDto);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            javascriptFrameworkService.addVersionToJavascriptFramework(javascriptFrameworkSaved.getId(), versionInDto);
+        when(javascriptFrameworkRepository.findById(1L)).thenReturn(Optional.of(javascriptFramework));
+        when(versionRepository.existsByVersionNumberAndJavascriptFramework(anyString(), any(JavascriptFramework.class))).thenReturn(true);
+
+        assertThrows(EntityAlreadyExistsException.class, () -> {
+            javascriptFrameworkService.addVersionToJavascriptFramework(1L, versionInDto);
         });
     }
 
     @Test
-    public void updateJavascriptFrameworkTest() {
+    public void givenUpdateJavascriptFrameworkUpdateDto_whenUpdateJavascriptFramework_thenReturnUpdatedJavascriptFramework_test() {
         JavascriptFramework javascriptFramework = new JavascriptFramework("React");
-        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework);
+        javascriptFramework.setId(1L);
         JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto = new JavascriptFrameworkUpdateDto("Angular");
+        JavascriptFramework javascriptFrameworkUpdated = new JavascriptFramework(javascriptFrameworkUpdateDto.getName());
+        javascriptFrameworkUpdated.setId(javascriptFramework.getId());
 
-        JavascriptFramework javascriptFrameworkById = javascriptFrameworkService.updateJavascriptFramework(javascriptFrameworkSaved.getId(), javascriptFrameworkUpdateDto);
+        when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(false);
+        when(javascriptFrameworkRepository.findById(javascriptFramework.getId())).thenReturn(Optional.of(javascriptFramework));
+        when(javascriptFrameworkRepository.save(any(JavascriptFramework.class))).thenReturn(javascriptFrameworkUpdated);
 
-        assertEquals(javascriptFrameworkSaved.getId(), javascriptFrameworkById.getId());
+        JavascriptFramework javascriptFrameworkById = javascriptFrameworkService.updateJavascriptFramework(javascriptFramework.getId(), javascriptFrameworkUpdateDto);
+
+        assertEquals(javascriptFramework.getId(), javascriptFrameworkById.getId());
         assertEquals(javascriptFrameworkUpdateDto.getName(), javascriptFrameworkById.getName());
     }
 
     @Test
-    public void updateJavascriptFrameworkByIdInputNullTest() {
-        assertThrows(IllegalArgumentException.class, () -> {
+    public void givenNull_whenUpdateJavascriptFramework_thenReturnNullPointerException_test() {
+        assertThrows(NullPointerException.class, () -> {
             javascriptFrameworkService.updateJavascriptFramework(1L, null);
         });
     }
 
     @Test
-    public void updateJavascriptFrameworkByIdNameExistsTest() {
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
-        javascriptFrameworkRepository.save(javascriptFramework);
+    public void givenJavascriptFrameworkUpdateDto_whenUpdateJavascriptFramework_thenReturnEntityAlreadyExistsException_test() {
         JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto = new JavascriptFrameworkUpdateDto("React");
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(true);
+
+        assertThrows(EntityAlreadyExistsException.class, () -> {
             javascriptFrameworkService.updateJavascriptFramework(1L, javascriptFrameworkUpdateDto);
         });
     }
 
     @Test
-    public void updateJavascriptFrameworkByIdNotFoundTest() {
+    public void givenJavascriptFrameworkUpdateDto_whenUpdateJavascriptFramework_thenReturnEntityNotFoundException_test() {
         JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto = new JavascriptFrameworkUpdateDto("React");
 
-        assertThrows(NoSuchElementException.class, () -> {
+        when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> {
             javascriptFrameworkService.updateJavascriptFramework(1L, javascriptFrameworkUpdateDto);
         });
     }
 
     @Test
-    public void deleteJavascriptFrameworkTest() {
-        JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
-        JavascriptFramework javascriptFramework2 = new JavascriptFramework("Angular");
-        JavascriptFramework javascriptFrameworkSaved1 = javascriptFrameworkRepository.save(javascriptFramework1);
-        JavascriptFramework javascriptFrameworkSaved2 = javascriptFrameworkRepository.save(javascriptFramework2);
-        assertEquals(2, ((Collection<JavascriptFramework>) javascriptFrameworkRepository.findAll()).size());
+    public void givenJavascriptID_whenDeleteJavascriptFramework_thenVerifyExecutionOfDeleteByID_test() {
+        when(javascriptFrameworkRepository.existsById(anyLong())).thenReturn(true);
 
-        javascriptFrameworkService.deleteFramework(javascriptFrameworkSaved1.getId());
-        assertEquals(1, ((Collection<JavascriptFramework>) javascriptFrameworkRepository.findAll()).size());
-        assertEquals(javascriptFramework2.getId(), javascriptFrameworkRepository.findById(javascriptFramework2.getId()).get().getId());
-        assertEquals(javascriptFramework2.getName(), javascriptFrameworkRepository.findById(javascriptFramework2.getId()).get().getName());
+        javascriptFrameworkService.deleteFramework(1L);
 
-        javascriptFrameworkService.deleteFramework(javascriptFrameworkSaved2.getId());
-        assertEquals(0, ((Collection<JavascriptFramework>) javascriptFrameworkRepository.findAll()).size());
+        verify(javascriptFrameworkRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
-    public void fulltextSearchJavascriptFrameworkTest() {
-        JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
-        JavascriptFramework javascriptFramework2 = new JavascriptFramework("Angular");
-        javascriptFrameworkRepository.save(javascriptFramework1);
-        javascriptFrameworkRepository.save(javascriptFramework2);
+    public void givenJavascriptID_whenDeleteJavascriptFramework_thenVerifyNotExecutionOfDeleteByID_test() {
+        when(javascriptFrameworkRepository.existsById(anyLong())).thenReturn(false);
 
-        List fulltextSearch1 = javascriptFrameworkService.fulltextSearch("Reac");
+        javascriptFrameworkService.deleteFramework(1L);
+
+        verify(javascriptFrameworkRepository, times(0)).deleteById(anyLong());
+
+    }
+
+    @Test
+    public void givenSearchText_whenFulltextSearch_thenReturnListOfFoundJavascriptFramework_test() {
+
+        JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
+
+        when(fulltextSearchService.fulltextSearch(new String[]{"name"}, javascriptFramework1.getName(), new Class[]{JavascriptFramework.class})).thenReturn(List.of(javascriptFramework1));
+
+        List<?> fulltextSearch1 = javascriptFrameworkService.fulltextSearch("React");
         assertEquals(1, fulltextSearch1.size());
-
-        List fulltextSearch2 = javascriptFrameworkService.fulltextSearch("Angula");
-        assertEquals(1, fulltextSearch2.size());
-
-        List fulltextSearch3 = javascriptFrameworkService.fulltextSearch("Vue");
-        assertEquals(0, fulltextSearch3.size());
     }
 }

@@ -137,7 +137,7 @@ public class JavascriptFrameworkService implements IJavascriptFrameworkService {
      * @param text Text to be searched in table
      * @return List of found JavascriptFramework with corresponding values
      */
-    public List<?> fulltextSearch(String text) {
+    public List<Object> fulltextSearch(String text) {
         return fulltextSearchService.fulltextSearch(new String[]{"name"}, text, new Class[]{JavascriptFramework.class});
     }
 }
