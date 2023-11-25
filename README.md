@@ -92,9 +92,9 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
   </tr>
   <tr>
     <td>Generické typy v ResponseEntity a kolekcí</td>
-    <td>Bude doplněno</td>
-    <td></td>
-    <td></td>
+    <td>30 minut</td>
+    <td>35 minut</td>
+    <td>FulltextSearch omezen na vrácení jednoho datového typu, když bylo umožněno více datových typů tak search vracel vždy List< Object >, teď vrací List< T ></td>
   </tr>
 </tbody>
 </table>
