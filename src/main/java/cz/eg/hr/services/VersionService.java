@@ -37,38 +37,15 @@ public class VersionService implements IVersionService {
 
     }
 
-    /**
-     * Method to get one Version by id
-     *
-     * @param id ID of Version to be returned.
-     * @return Return {@link VersionOutDto} if Version is found by id
-     * @throws EntityNotFoundException If entity Version is not found
-     */
-
     public VersionOutDto getVersion(Long id) {
         Version version = versionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Version with id " + id + " not found."));
         return modelMapper.map(version, VersionOutDto.class);
     }
 
-    /**
-     * Method to get all Versions in database
-     *
-     * @return All Versions in database
-     */
     public Iterable<VersionOutDto> getAllVersions() {
         return StreamSupport.stream(versionRepository.findAll().spliterator(), false).map(item -> modelMapper.map(item, VersionOutDto.class)).collect(Collectors.toList());
     }
 
-    /**
-     * Method that updates Version in database. Version will be updated if exists and in  Javascript framework
-     * is not version with same versionNumber.
-     *
-     * @param id           ID of Version to be updated.
-     * @param versionInDto DTO with values that will update Version
-     * @return Updated Version
-     * @throws EntityNotFoundException      If Version is not found
-     * @throws EntityAlreadyExistsException If Version exists in current Javascript framework with same versionNumber
-     */
     public VersionOutDto updateJavascriptFrameworkVersion(Long id, @NotNull VersionInDto versionInDto) {
         Version version = versionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Version with id " + id + " not found."));
         JavascriptFramework javascriptFramework = version.getJavascriptFramework();
@@ -82,23 +59,12 @@ public class VersionService implements IVersionService {
         return modelMapper.map(versionRepository.save(versionUpdated), VersionOutDto.class);
     }
 
-    /**
-     * Delete Version by id if exists
-     *
-     * @param id ID of Version to be deleted.
-     */
     public void deleteVersion(Long id) {
         if (versionRepository.existsById(id)) {
             versionRepository.deleteById(id);
         }
     }
 
-    /**
-     * Fulltext search in table Version
-     *
-     * @param text Text to be searched in table
-     * @return List of found Versions with corresponding values
-     */
     public List<VersionOutDto> fulltextSearch(String text) {
         return fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, text, VersionOutDto.class);
     }

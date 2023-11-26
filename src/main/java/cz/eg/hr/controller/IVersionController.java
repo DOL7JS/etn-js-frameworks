@@ -20,7 +20,7 @@ public interface IVersionController {
      * Returns with status codes:
      * 200: successfully retrieve Versions
      *
-     * @return ResponseEntity that contains all Versions if the operation is successful
+     * @return ResponseEntity that contains all Versions mapped to VersionOutDto if the operation is successful
      */
     ResponseEntity<Iterable<VersionOutDto>> getAllVersion();
 
@@ -31,7 +31,7 @@ public interface IVersionController {
      * 404: Version is not found
      *
      * @param id ID of Version to be found
-     * @return ResponseEntity that contains one Version found by ID if the operation is successful
+     * @return ResponseEntity that contains one Version found by ID mapped to VersionOutDto if the operation is successful
      */
     ResponseEntity<VersionOutDto> getVersion(@PathVariable Long id);
 
@@ -44,7 +44,7 @@ public interface IVersionController {
      *
      * @param id           ID of Version to be updated
      * @param versionInDto DTO containing new values
-     * @return ResponseEntity that contains updated Version if the operation is successful
+     * @return ResponseEntity that contains updated Version mapped to VersionOutDto if the operation is successful
      */
     ResponseEntity<VersionOutDto> updateVersion(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto);
 
@@ -61,7 +61,7 @@ public interface IVersionController {
      * 200: successfully retrieve Version
      *
      * @param text Text to be searched in table
-     * @return ResponseEntity that contains found Versions if the operation is successful
+     * @return ResponseEntity that contains found Versions mapped to VersionOutDto if the operation is successful
      */
     ResponseEntity<List<VersionOutDto>> fulltextSearch(@RequestParam String text);
 

@@ -21,11 +21,11 @@ import java.util.List;
 public interface IJavascriptFrameworkController {
 
     /**
-     * Retrieves all JavascriptFrameworks using a GET request if the operation is successful.
+     * Retrieves all JavascriptFramework using a GET request if the operation is successful.
      * Returns with status codes:
-     * 200: successfully retrieve JavascriptFrameworks
+     * 200: successfully retrieve JavascriptFrameworkDto
      *
-     * @return ResponseEntity that contains all JavascriptFrameworks if the operation is successful
+     * @return ResponseEntity that contains all JavascriptFrameworks mapped to JavascriptFrameworkDto if the operation is successful
      */
     ResponseEntity<Iterable<JavascriptFrameworkDto>> getAllFrameworks();
 
@@ -36,7 +36,7 @@ public interface IJavascriptFrameworkController {
      * 404: JavascriptFramework is not found
      *
      * @param id ID of JavascriptFramework to be found
-     * @return ResponseEntity that contains one JavascriptFramework found by ID if the operation is successful
+     * @return ResponseEntity that contains one JavascriptFramework mapped to JavascriptFrameworkDto found by ID if the operation is successful
      */
     ResponseEntity<JavascriptFrameworkDto> getFramework(@PathVariable Long id);
 
@@ -48,7 +48,7 @@ public interface IJavascriptFrameworkController {
      * 400: JavascriptFramework name of JavascriptFramework already exists
      *
      * @param javaScriptFrameworkInputDto DTO which contains values to be added to database
-     * @return ResponseEntity that contains added JavascriptFramework if the operation is successful
+     * @return ResponseEntity that contains added JavascriptFramework mapped to JavascriptFrameworkDto if the operation is successful
      */
     ResponseEntity<JavascriptFrameworkDto> addFramework(@RequestBody @Valid JavaScriptFrameworkInputDto javaScriptFrameworkInputDto);
 
@@ -60,7 +60,7 @@ public interface IJavascriptFrameworkController {
      *
      * @param id           ID of JavascriptFramework to which will be Version added
      * @param versionInDto DTO if Version to be added to JavascriptFramework
-     * @return ResponseEntity that contains JavascriptFramework if the operation is successful
+     * @return ResponseEntity that contains JavascriptFramework mapped to JavascriptFrameworkDto if the operation is successful
      */
     ResponseEntity<JavascriptFrameworkDto> addVersionToFramework(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto);
 
@@ -73,7 +73,7 @@ public interface IJavascriptFrameworkController {
      *
      * @param id                           ID of JavascriptFramework to be updated
      * @param javascriptFrameworkUpdateDto DTO containing new values
-     * @return ResponseEntity that contains updated JavascriptFramework if the operation is successful
+     * @return ResponseEntity that contains updated JavascriptFramework mapped to JavascriptFrameworkDto if the operation is successful
      */
     ResponseEntity<JavascriptFrameworkDto> updateFramework(@PathVariable Long id, @RequestBody @Valid JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto);
 
@@ -90,7 +90,7 @@ public interface IJavascriptFrameworkController {
      * 200: successfully retrieve JavascriptFramework
      *
      * @param text Text to be searched in table
-     * @return ResponseEntity that contains found Versions if the operation is successful
+     * @return ResponseEntity that contains found JavascriptFramework mapped to JavascriptFrameworkDto if the operation is successful
      */
     ResponseEntity<List<JavascriptFrameworkDto>> fulltextSearch(@RequestParam String text);
 }
