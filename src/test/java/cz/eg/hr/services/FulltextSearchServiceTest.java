@@ -49,12 +49,12 @@ public class FulltextSearchServiceTest {
     @Test
     public void givenSearchText_whenFulltextSearch_thenReturnListOfFoundVersions_test() {
         JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
-        JavascriptFramework save = javascriptFrameworkRepository.save(javascriptFramework1);
+        JavascriptFramework javascriptFrameworkSaved = javascriptFrameworkRepository.save(javascriptFramework1);
 
         Version v1 = new Version("1.1", LocalDate.of(2020, 1, 1), 1);
-        v1.setJavascriptFramework(save);
+        v1.setJavascriptFramework(javascriptFrameworkSaved);
         Version v2 = new Version("1.2", LocalDate.of(2020, 1, 1), 1);
-        v2.setJavascriptFramework(save);
+        v2.setJavascriptFramework(javascriptFrameworkSaved);
         versionRepository.save(v1);
 
         List<Version> fulltextSearch = fulltextSearchServiceVersion.fulltextSearch(new String[]{"versionNumber", "endOfSupport", "stars"}, v1.getVersionNumber(), Version.class);
