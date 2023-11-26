@@ -78,23 +78,23 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
     <td>5 hodiny</td>
     <td>Problém: Injektování ModelMapperu - po pár minutách na internetu použito @Spy </td>
   </tr>
-  <tr>
-    <td>Refactoring fulltext search</td>
-    <td>Bude doplněno</td>
-    <td></td>
-    <td></td>
-  </tr>
+ 
   <tr>
     <td>Oddělení entit od DTO</td>
     <td>2 hodiny</td>
     <td>50 minut</td>
     <td>Upraveno aby ze service do controlleru chodily dtos a zároveň z controlleru ven taky dtos</td>
   </tr>
-  <tr>
+ <tr>
+    <td>Refactoring fulltext search</td>
+    <td rowspan="2">40 minut</td>
+    <td rowspan="2">45 minut</td>
+    <td>Vytvoření SearchSession pouze v konstruktoru</td>
+  </tr>  
+<tr>
     <td>Generické typy v ResponseEntity a kolekcí</td>
-    <td>30 minut</td>
-    <td>35 minut</td>
     <td>FulltextSearch omezen na vrácení jednoho datového typu, když bylo umožněno více datových typů tak search vracel vždy List< Object >, teď vrací List< T ></td>
+
   </tr>
 </tbody>
 </table>
