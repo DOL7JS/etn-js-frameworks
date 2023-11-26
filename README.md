@@ -87,7 +87,7 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
   <tr>
     <td>Oddělení entit od DTO</td>
     <td>2 hodiny</td>
-    <td></td>
+    <td>50 minut</td>
     <td></td>
   </tr>
   <tr>
