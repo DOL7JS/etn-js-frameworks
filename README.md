@@ -75,7 +75,7 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
   <tr>
     <td>Testy - repository, services, controllers</td>
     <td>5 - 6 hodin</td>
-    <td>4 hodiny</td>
+    <td>5 hodiny</td>
     <td>Problém: Injektování ModelMapperu - po pár minutách na internetu použito @Spy </td>
   </tr>
   <tr>
@@ -86,15 +86,15 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
   </tr>
   <tr>
     <td>Oddělení entit od DTO</td>
-    <td>Bude doplněno</td>
+    <td>2 hodiny</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
     <td>Generické typy v ResponseEntity a kolekcí</td>
-    <td>Bude doplněno</td>
-    <td></td>
-    <td></td>
+    <td>30 minut</td>
+    <td>35 minut</td>
+    <td>FulltextSearch omezen na vrácení jednoho datového typu, když bylo umožněno více datových typů tak search vracel vždy List< Object >, teď vrací List< T ></td>
   </tr>
 </tbody>
 </table>
