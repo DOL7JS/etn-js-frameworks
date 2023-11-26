@@ -10,14 +10,13 @@ import java.util.List;
 
 @Service
 public class FulltextSearchService<T> implements IFulltextSearchService<T> {
-    private final EntityManager entityManager;
     private final SearchSession searchSession;
 
     public FulltextSearchService(EntityManager entityManager) {
-        this.entityManager = entityManager;
         this.searchSession = Search.session(entityManager);
     }
 
+    @Transactional
     public List<T> fulltextSearch(String[] fields, String text, Class<T> type) {
         return searchSession
             .search(type)
