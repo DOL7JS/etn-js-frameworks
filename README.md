@@ -88,7 +88,7 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
     <td>Oddělení entit od DTO</td>
     <td>2 hodiny</td>
     <td>50 minut</td>
-    <td></td>
+    <td>Upraveno aby ze service do controlleru chodily dtos a zároveň z controlleru ven taky dtos</td>
   </tr>
   <tr>
     <td>Generické typy v ResponseEntity a kolekcí</td>
