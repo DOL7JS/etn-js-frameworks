@@ -71,7 +71,7 @@ public class VersionControllerTest {
         ow.registerModule(new JavaTimeModule());
 
         VersionInDto versionInDto = new VersionInDto("1.2", LocalDate.of(2021, 1, 1), 5);
-        Version version = new Version(versionInDto.getVersionNumber(), versionInDto.getEndOfSupport(), versionInDto.getStars());
+        VersionOutDto version = new VersionOutDto(versionInDto.getVersionNumber(), versionInDto.getEndOfSupport(), versionInDto.getStars());
 
         when(versionService.updateJavascriptFrameworkVersion(anyLong(), any(VersionInDto.class))).thenReturn(version);
 
@@ -126,7 +126,7 @@ public class VersionControllerTest {
     @Test
     void givenSearchText_whenFulltextSearch_thenReturnJsonListOfFoundVersion_test() throws Exception {
         String text = "1.2.3.";
-        Version version = new Version(text, LocalDate.of(2020, 1, 1), 5);
+        VersionOutDto version = new VersionOutDto(text, LocalDate.of(2020, 1, 1), 5);
 
         when(versionService.fulltextSearch(text)).thenReturn(List.of(version));
 

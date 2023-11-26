@@ -2,6 +2,7 @@ package cz.eg.hr.controller;
 
 import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
+import cz.eg.hr.dtos.JavascriptFrameworkDto;
 import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import cz.eg.hr.services.JavascriptFrameworkService;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RequestMapping("framework")
@@ -24,31 +27,31 @@ public class JavascriptFrameworkController implements IJavascriptFrameworkContro
 
 
     @GetMapping("")
-    public ResponseEntity<Iterable<JavascriptFramework>> getAllFrameworks() {
+    public ResponseEntity<Iterable<JavascriptFrameworkDto>> getAllFrameworks() {
         return ResponseEntity.ok(javascriptFrameworkService.getAllJavascriptFrameworks());
     }
 
 
     @GetMapping("{id}")
-    public ResponseEntity<JavascriptFramework> getFramework(@PathVariable Long id) {
+    public ResponseEntity<JavascriptFrameworkDto> getFramework(@PathVariable Long id) {
         return ResponseEntity.ok(javascriptFrameworkService.getJavascriptFramework(id));
     }
 
 
     @PostMapping("")
-    public ResponseEntity<?> addFramework(@RequestBody @Valid JavaScriptFrameworkInputDto javaScriptFrameworkInputDto) {
+    public ResponseEntity<JavascriptFrameworkDto> addFramework(@RequestBody @Valid JavaScriptFrameworkInputDto javaScriptFrameworkInputDto) {
         return ResponseEntity.ok(javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto));
     }
 
 
     @PostMapping("{id}")
-    public ResponseEntity<?> addVersionToFramework(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto) {
+    public ResponseEntity<JavascriptFrameworkDto> addVersionToFramework(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto) {
         return ResponseEntity.ok(javascriptFrameworkService.addVersionToJavascriptFramework(id, versionInDto));
     }
 
 
     @PatchMapping("{id}")
-    public ResponseEntity<?> updateFramework(@PathVariable Long id, @RequestBody @Valid JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto) {
+    public ResponseEntity<JavascriptFrameworkDto> updateFramework(@PathVariable Long id, @RequestBody @Valid JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto) {
         return ResponseEntity.ok(javascriptFrameworkService.updateJavascriptFramework(id, javascriptFrameworkUpdateDto));
     }
 
@@ -60,7 +63,7 @@ public class JavascriptFrameworkController implements IJavascriptFrameworkContro
 
 
     @GetMapping("fulltextSearch")
-    public ResponseEntity<?> fulltextSearch(@RequestParam String text) {
+    public ResponseEntity<List<JavascriptFrameworkDto>> fulltextSearch(@RequestParam String text) {
         return ResponseEntity.ok(javascriptFrameworkService.fulltextSearch(text));
     }
 

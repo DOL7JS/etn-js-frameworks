@@ -26,9 +26,9 @@ public class VersionService implements IVersionService {
 
     private final VersionRepository versionRepository;
     private final ModelMapper modelMapper;
-    private final FulltextSearchService fulltextSearchService;
+    private final FulltextSearchService<VersionOutDto> fulltextSearchService;
 
-    public VersionService(VersionRepository versionRepository, ModelMapper modelMapperIn, FulltextSearchService fulltextSearchService) {
+    public VersionService(VersionRepository versionRepository, ModelMapper modelMapperIn, FulltextSearchService<VersionOutDto> fulltextSearchService) {
         this.versionRepository = versionRepository;
         this.modelMapper = modelMapperIn;
         this.fulltextSearchService = fulltextSearchService;
@@ -69,7 +69,7 @@ public class VersionService implements IVersionService {
      * @throws EntityNotFoundException      If Version is not found
      * @throws EntityAlreadyExistsException If Version exists in current Javascript framework with same versionNumber
      */
-    public Version updateJavascriptFrameworkVersion(Long id, @NotNull VersionInDto versionInDto) {
+    public VersionOutDto updateJavascriptFrameworkVersion(Long id, @NotNull VersionInDto versionInDto) {
         Version version = versionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Version with id " + id + " not found."));
         JavascriptFramework javascriptFramework = version.getJavascriptFramework();
         boolean versionAlreadyExists = versionRepository.existsByVersionNumberAndJavascriptFrameworkAndIdIsNot(versionInDto.getVersionNumber(), javascriptFramework, id);
@@ -79,7 +79,7 @@ public class VersionService implements IVersionService {
         Version versionUpdated = modelMapper.map(versionInDto, Version.class);
         versionUpdated.setId(version.getId());
         versionUpdated.setJavascriptFramework(javascriptFramework);
-        return versionRepository.save(versionUpdated);
+        return modelMapper.map(versionRepository.save(versionUpdated), VersionOutDto.class);
     }
 
     /**
@@ -99,7 +99,7 @@ public class VersionService implements IVersionService {
      * @param text Text to be searched in table
      * @return List of found Versions with corresponding values
      */
-    public List<Object> fulltextSearch(String text) {
-        return fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, text, new Class[]{Version.class});
+    public List<VersionOutDto> fulltextSearch(String text) {
+        return fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, text, VersionOutDto.class);
     }
 }

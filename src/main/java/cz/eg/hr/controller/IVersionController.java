@@ -1,9 +1,13 @@
 package cz.eg.hr.controller;
 
+import cz.eg.hr.data.Version;
 import cz.eg.hr.dtos.VersionInDto;
+import cz.eg.hr.dtos.VersionOutDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Interface for handling HTTP request for Versions
@@ -18,7 +22,7 @@ public interface IVersionController {
      *
      * @return ResponseEntity that contains all Versions if the operation is successful
      */
-    ResponseEntity<?> getAllVersion();
+    ResponseEntity<Iterable<VersionOutDto>> getAllVersion();
 
     /**
      * Retrieves one Version by ID using a GET request if the operation is successful.
@@ -29,7 +33,7 @@ public interface IVersionController {
      * @param id ID of Version to be found
      * @return ResponseEntity that contains one Version found by ID if the operation is successful
      */
-    ResponseEntity<?> getVersion(@PathVariable Long id);
+    ResponseEntity<VersionOutDto> getVersion(@PathVariable Long id);
 
     /**
      * Update Version by ID using a PUT request if the operation is successful.
@@ -42,7 +46,7 @@ public interface IVersionController {
      * @param versionInDto DTO containing new values
      * @return ResponseEntity that contains updated Version if the operation is successful
      */
-    ResponseEntity<?> updateVersion(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto);
+    ResponseEntity<VersionOutDto> updateVersion(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto);
 
     /**
      * Delete Version by ID using a DELETE request if the operation is successful.
@@ -59,6 +63,6 @@ public interface IVersionController {
      * @param text Text to be searched in table
      * @return ResponseEntity that contains found Versions if the operation is successful
      */
-    ResponseEntity<?> fulltextSearch(@RequestParam String text);
+    ResponseEntity<List<VersionOutDto>> fulltextSearch(@RequestParam String text);
 
 }

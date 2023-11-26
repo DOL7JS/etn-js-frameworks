@@ -1,11 +1,15 @@
 package cz.eg.hr.controller;
 
 
+import cz.eg.hr.data.Version;
 import cz.eg.hr.dtos.VersionInDto;
+import cz.eg.hr.dtos.VersionOutDto;
 import cz.eg.hr.services.VersionService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -20,19 +24,19 @@ public class VersionController implements IVersionController {
 
 
     @GetMapping("")
-    public ResponseEntity<?> getAllVersion() {
+    public ResponseEntity<Iterable<VersionOutDto>> getAllVersion() {
         return ResponseEntity.ok(versionService.getAllVersions());
     }
 
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getVersion(@PathVariable Long id) {
+    public ResponseEntity<VersionOutDto> getVersion(@PathVariable Long id) {
         return ResponseEntity.ok(versionService.getVersion(id));
     }
 
 
     @PutMapping("{id}")
-    public ResponseEntity<?> updateVersion(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto) {
+    public ResponseEntity<VersionOutDto> updateVersion(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto) {
         return ResponseEntity.ok(versionService.updateJavascriptFrameworkVersion(id, versionInDto));
     }
 
@@ -44,7 +48,7 @@ public class VersionController implements IVersionController {
 
 
     @GetMapping("fulltextSearch")
-    public ResponseEntity<?> fulltextSearch(@RequestParam String text) {
+    public ResponseEntity<List<VersionOutDto>> fulltextSearch(@RequestParam String text) {
         return ResponseEntity.ok(versionService.fulltextSearch(text));
     }
 }

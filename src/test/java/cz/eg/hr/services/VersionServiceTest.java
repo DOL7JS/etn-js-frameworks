@@ -36,7 +36,7 @@ public class VersionServiceTest {
     @Spy
     private ModelMapper modelMapper;
     @Mock
-    private FulltextSearchService fulltextSearchService;
+    private FulltextSearchService<VersionOutDto> fulltextSearchService;
 
     @Test
     public void whenGetAllVersions_thenReturnListOfAllVersions_test() {
@@ -86,7 +86,7 @@ public class VersionServiceTest {
         when(versionRepository.existsByVersionNumberAndJavascriptFrameworkAndIdIsNot(anyString(), any(JavascriptFramework.class), anyLong())).thenReturn(false);
         when(versionRepository.save(any(Version.class))).thenReturn(versionUpdated);
 
-        Version version = versionService.updateJavascriptFrameworkVersion(v1.getId(), versionInDto);
+        VersionOutDto version = versionService.updateJavascriptFrameworkVersion(v1.getId(), versionInDto);
 
         assertEquals(versionUpdated.getId(), version.getId());
         assertEquals(versionUpdated.getVersionNumber(), version.getVersionNumber());
@@ -141,11 +141,11 @@ public class VersionServiceTest {
 
     @Test
     public void givenSearchText_whenFulltextSearch_thenReturnListOfFoundVersion_test() {
-        Version v1 = new Version("1.2.3.4", LocalDate.of(2020, 1, 1), 4);
+        VersionOutDto v1 = new VersionOutDto("1.2.3.4", LocalDate.of(2020, 1, 1), 4);
 
-        when(fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, v1.getVersionNumber(), new Class[]{Version.class})).thenReturn(List.of(v1));
+        when(fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, v1.getVersionNumber(), VersionOutDto.class)).thenReturn(List.of(v1));
 
-        List<?> list = versionService.fulltextSearch(v1.getVersionNumber());
+        List<VersionOutDto> list = versionService.fulltextSearch(v1.getVersionNumber());
 
         assertEquals(1, list.size());
     }

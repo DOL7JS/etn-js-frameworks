@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.data.Version;
 import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
+import cz.eg.hr.dtos.JavascriptFrameworkDto;
 import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import cz.eg.hr.services.JavascriptFrameworkService;
@@ -39,9 +40,10 @@ class JavascriptFrameworkControllerTest {
 
     @Test
     void whenGETFramework_thenReturnJsonOfTwoJavascriptFrameworks_test() throws Exception {
-        JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
-        JavascriptFramework javascriptFramework2 = new JavascriptFramework("Angular");
-
+        JavascriptFrameworkDto javascriptFramework1 = new JavascriptFrameworkDto();
+        javascriptFramework1.setName("React");
+        JavascriptFrameworkDto javascriptFramework2 = new JavascriptFrameworkDto();
+        javascriptFramework2.setName("Angular");
         when(javascriptFrameworkService.getAllJavascriptFrameworks()).thenReturn(List.of(javascriptFramework1, javascriptFramework2));
 
         mockMvc.perform(get("/framework"))
@@ -52,18 +54,20 @@ class JavascriptFrameworkControllerTest {
 
     @Test
     void givenJavascriptFrameworkID_whenGETFrameworkID_thenReturnJsonJavascriptFrameworkById_test() throws Exception {
-        JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
+        JavascriptFrameworkDto javascriptFramework = new JavascriptFrameworkDto();
+        javascriptFramework.setName("React");
 
-        when(javascriptFrameworkService.getJavascriptFramework(1L)).thenReturn(javascriptFramework1);
+        when(javascriptFrameworkService.getJavascriptFramework(1L)).thenReturn(javascriptFramework);
 
         mockMvc.perform(get("/framework/1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value(javascriptFramework1.getName()));
+            .andExpect(jsonPath("$.name").value(javascriptFramework.getName()));
     }
 
     @Test
     void givenJavaScriptFrameworkInputDtoWithName_whenPOSTFramework_thenReturnJsonOfNewJavascriptFramework_test() throws Exception {
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
+        JavascriptFrameworkDto javascriptFramework = new JavascriptFrameworkDto();
+        javascriptFramework.setName("React");
         ObjectMapper ow = new ObjectMapper();
         JavaScriptFrameworkInputDto javaScriptFrameworkInputDto = new JavaScriptFrameworkInputDto(javascriptFramework.getName());
 
@@ -103,7 +107,8 @@ class JavascriptFrameworkControllerTest {
     void givenUpdateJavascriptFrameworkUpdateDto_whenPATCHFrameworkID_thenReturnUpdatedJsonJavascriptFramework_test() throws Exception {
         ObjectMapper ow = new ObjectMapper();
         JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto = new JavascriptFrameworkUpdateDto("Angular");
-        JavascriptFramework javascriptFramework = new JavascriptFramework(javascriptFrameworkUpdateDto.getName());
+        JavascriptFrameworkDto javascriptFramework = new JavascriptFrameworkDto();
+        javascriptFramework.setName(javascriptFrameworkUpdateDto.getName());
 
         when(javascriptFrameworkService.updateJavascriptFramework(anyLong(), any(JavascriptFrameworkUpdateDto.class))).thenReturn(javascriptFramework);
 
@@ -131,7 +136,8 @@ class JavascriptFrameworkControllerTest {
         ow.registerModule(new JavaTimeModule());
 
         VersionInDto versionInDto = new VersionInDto("1.1", LocalDate.of(2020, 1, 1), 1);
-        JavascriptFramework javascriptFramework = new JavascriptFramework("React");
+        JavascriptFrameworkDto javascriptFramework = new JavascriptFrameworkDto();
+        javascriptFramework.setName("React");
         javascriptFramework.setVersions(Set.of(new Version(versionInDto.getVersionNumber(), versionInDto.getEndOfSupport(), versionInDto.getStars())));
 
         when(javascriptFrameworkService.addVersionToJavascriptFramework(anyLong(), any(VersionInDto.class))).thenReturn(javascriptFramework);
@@ -179,7 +185,7 @@ class JavascriptFrameworkControllerTest {
     }
 
     @Test
-    void givenJavascriptID_whenDELELTEFrameworkID_thenVerifyExecutionOfDeleteFramework_test() throws Exception {
+    void givenJavascriptID_whenDELETEFrameworkID_thenVerifyExecutionOfDeleteFramework_test() throws Exception {
         mockMvc.perform(delete("/framework/1")).andExpect(status().isOk());
         verify(javascriptFrameworkService, times(1)).deleteFramework(anyLong());
     }
@@ -187,7 +193,8 @@ class JavascriptFrameworkControllerTest {
     @Test
     void givenSearchText_whenFulltextSearch_thenReturnJsonListOfFoundJavascriptFramework_test() throws Exception {
         String text = "React";
-        JavascriptFramework javascriptFramework = new JavascriptFramework(text);
+        JavascriptFrameworkDto javascriptFramework = new JavascriptFrameworkDto();
+        javascriptFramework.setName(text);
 
         when(javascriptFrameworkService.fulltextSearch(text)).thenReturn(List.of(javascriptFramework));
 

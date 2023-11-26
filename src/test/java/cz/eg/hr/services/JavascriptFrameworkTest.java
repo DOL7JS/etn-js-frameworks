@@ -3,6 +3,7 @@ package cz.eg.hr.services;
 import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.data.Version;
 import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
+import cz.eg.hr.dtos.JavascriptFrameworkDto;
 import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import cz.eg.hr.repository.JavascriptFrameworkRepository;
@@ -12,6 +13,8 @@ import cz.eg.hr.rest.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -37,7 +40,9 @@ public class JavascriptFrameworkTest {
     @Mock
     private JavascriptFrameworkRepository javascriptFrameworkRepository;
     @Mock
-    private FulltextSearchService fulltextSearchService;
+    private FulltextSearchService<JavascriptFrameworkDto> fulltextSearchService;
+    @Spy
+    private ModelMapper modelMapper;
 
     @Test
     public void whenGetAllJavascriptFrameworks_thenReturnListOfTwoJavascriptFrameworks_test() {
@@ -46,11 +51,11 @@ public class JavascriptFrameworkTest {
 
         when(javascriptFrameworkRepository.findAll()).thenReturn(List.of(javascriptFramework1, javascriptFramework2));
 
-        Iterable<?> allFrameworks = javascriptFrameworkService.getAllJavascriptFrameworks();
+        Iterable<JavascriptFrameworkDto> allFrameworks = javascriptFrameworkService.getAllJavascriptFrameworks();
 
-        assertEquals(2, ((Collection<?>) allFrameworks).size());
-        assertTrue(((Collection<?>) allFrameworks).stream().anyMatch(js -> js.equals(javascriptFramework1)));
-        assertTrue(((Collection<?>) allFrameworks).stream().anyMatch(js -> js.equals(javascriptFramework2)));
+        assertEquals(2, ((Collection<JavascriptFrameworkDto>) allFrameworks).size());
+        assertTrue(((Collection<JavascriptFrameworkDto>) allFrameworks).stream().anyMatch(js -> js.getName().equals(javascriptFramework1.getName())));
+        assertTrue(((Collection<JavascriptFrameworkDto>) allFrameworks).stream().anyMatch(js -> js.getName().equals(javascriptFramework2.getName())));
     }
 
     @Test
@@ -58,7 +63,7 @@ public class JavascriptFrameworkTest {
         JavascriptFramework javascriptFramework = new JavascriptFramework("React");
         javascriptFramework.setId(1L);
         when(javascriptFrameworkRepository.findById(javascriptFramework.getId())).thenReturn(Optional.of(javascriptFramework));
-        JavascriptFramework javascriptFrameworkById = javascriptFrameworkService.getJavascriptFramework(javascriptFramework.getId());
+        JavascriptFrameworkDto javascriptFrameworkById = javascriptFrameworkService.getJavascriptFramework(javascriptFramework.getId());
 
         assertEquals(javascriptFramework.getId(), javascriptFrameworkById.getId());
         assertEquals(javascriptFramework.getName(), javascriptFrameworkById.getName());
@@ -82,7 +87,7 @@ public class JavascriptFrameworkTest {
         when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(false);
         when(versionRepository.save(any(Version.class))).thenReturn(version);
 
-        JavascriptFramework javascriptFramework = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
+        JavascriptFrameworkDto javascriptFramework = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
 
         assertEquals(javaScriptFrameworkInputDto.getName(), javascriptFramework.getName());
         assertEquals(1, javascriptFramework.getVersions().size());
@@ -97,7 +102,7 @@ public class JavascriptFrameworkTest {
         when(javascriptFrameworkRepository.save(any(JavascriptFramework.class))).thenReturn(new JavascriptFramework(javaScriptFrameworkInputDto.getName()));
         when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(false);
 
-        JavascriptFramework javascriptFramework = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
+        JavascriptFrameworkDto javascriptFramework = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
 
         assertEquals(javaScriptFrameworkInputDto.getName(), javascriptFramework.getName());
         assertNull(javascriptFramework.getVersions());
@@ -125,7 +130,7 @@ public class JavascriptFrameworkTest {
         when(versionRepository.existsByVersionNumberAndJavascriptFramework(anyString(), any(JavascriptFramework.class))).thenReturn(false);
         when(versionRepository.save(any(Version.class))).thenReturn(version);
 
-        JavascriptFramework javascriptFrameworkWithVersion = javascriptFrameworkService.addVersionToJavascriptFramework(javascriptFramework.getId(), versionInDto);
+        JavascriptFrameworkDto javascriptFrameworkWithVersion = javascriptFrameworkService.addVersionToJavascriptFramework(javascriptFramework.getId(), versionInDto);
 
         assertNotNull(javascriptFrameworkWithVersion.getVersions());
         assertEquals(1, javascriptFrameworkWithVersion.getVersions().size());
@@ -167,7 +172,7 @@ public class JavascriptFrameworkTest {
         when(javascriptFrameworkRepository.findById(javascriptFramework.getId())).thenReturn(Optional.of(javascriptFramework));
         when(javascriptFrameworkRepository.save(any(JavascriptFramework.class))).thenReturn(javascriptFrameworkUpdated);
 
-        JavascriptFramework javascriptFrameworkById = javascriptFrameworkService.updateJavascriptFramework(javascriptFramework.getId(), javascriptFrameworkUpdateDto);
+        JavascriptFrameworkDto javascriptFrameworkById = javascriptFrameworkService.updateJavascriptFramework(javascriptFramework.getId(), javascriptFrameworkUpdateDto);
 
         assertEquals(javascriptFramework.getId(), javascriptFrameworkById.getId());
         assertEquals(javascriptFrameworkUpdateDto.getName(), javascriptFrameworkById.getName());
@@ -223,12 +228,12 @@ public class JavascriptFrameworkTest {
 
     @Test
     public void givenSearchText_whenFulltextSearch_thenReturnListOfFoundJavascriptFramework_test() {
+        JavascriptFrameworkDto javascriptFramework1 = new JavascriptFrameworkDto();
+        javascriptFramework1.setName("React");
 
-        JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
+        when(fulltextSearchService.fulltextSearch(new String[]{"name"}, javascriptFramework1.getName(), JavascriptFrameworkDto.class)).thenReturn(List.of(javascriptFramework1));
 
-        when(fulltextSearchService.fulltextSearch(new String[]{"name"}, javascriptFramework1.getName(), new Class[]{JavascriptFramework.class})).thenReturn(List.of(javascriptFramework1));
-
-        List<?> fulltextSearch1 = javascriptFrameworkService.fulltextSearch("React");
-        assertEquals(1, fulltextSearch1.size());
+        List<JavascriptFrameworkDto> fulltextSearch = javascriptFrameworkService.fulltextSearch(javascriptFramework1.getName());
+        assertEquals(1, fulltextSearch.size());
     }
 }

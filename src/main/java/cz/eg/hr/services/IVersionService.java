@@ -11,9 +11,9 @@ public interface IVersionService {
 
     Iterable<VersionOutDto> getAllVersions();
 
-    Version updateJavascriptFrameworkVersion(Long id, VersionInDto versionInDto);
+    VersionOutDto updateJavascriptFrameworkVersion(Long id, VersionInDto versionInDto);
 
     void deleteVersion(Long id);
 
-    List<Object> fulltextSearch(String text);
+    List<VersionOutDto> fulltextSearch(String text);
 }

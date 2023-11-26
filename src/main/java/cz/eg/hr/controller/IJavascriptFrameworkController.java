@@ -1,6 +1,8 @@
 package cz.eg.hr.controller;
 
+import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
+import cz.eg.hr.dtos.JavascriptFrameworkDto;
 import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import jakarta.validation.Valid;
@@ -8,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * Interface for handling HTTP request for JavascriptFrameworks
@@ -23,7 +27,7 @@ public interface IJavascriptFrameworkController {
      *
      * @return ResponseEntity that contains all JavascriptFrameworks if the operation is successful
      */
-    ResponseEntity<?> getAllFrameworks();
+    ResponseEntity<Iterable<JavascriptFrameworkDto>> getAllFrameworks();
 
     /**
      * Retrieves one JavascriptFramework by ID using a GET request if the operation is successful.
@@ -34,7 +38,7 @@ public interface IJavascriptFrameworkController {
      * @param id ID of JavascriptFramework to be found
      * @return ResponseEntity that contains one JavascriptFramework found by ID if the operation is successful
      */
-    ResponseEntity<?> getFramework(@PathVariable Long id);
+    ResponseEntity<JavascriptFrameworkDto> getFramework(@PathVariable Long id);
 
     /**
      * Add JavascriptFramework using a POST request if the operation is successful.
@@ -46,7 +50,7 @@ public interface IJavascriptFrameworkController {
      * @param javaScriptFrameworkInputDto DTO which contains values to be added to database
      * @return ResponseEntity that contains added JavascriptFramework if the operation is successful
      */
-    ResponseEntity<?> addFramework(@RequestBody @Valid JavaScriptFrameworkInputDto javaScriptFrameworkInputDto);
+    ResponseEntity<JavascriptFrameworkDto> addFramework(@RequestBody @Valid JavaScriptFrameworkInputDto javaScriptFrameworkInputDto);
 
     /**
      * Add Version to JavascriptFramework using a POST request if the operation is successful.
@@ -58,7 +62,7 @@ public interface IJavascriptFrameworkController {
      * @param versionInDto DTO if Version to be added to JavascriptFramework
      * @return ResponseEntity that contains JavascriptFramework if the operation is successful
      */
-    ResponseEntity<?> addVersionToFramework(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto);
+    ResponseEntity<JavascriptFrameworkDto> addVersionToFramework(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto);
 
     /**
      * Update JavascriptFramework by ID using a PATCH request if the operation is successful.
@@ -71,7 +75,7 @@ public interface IJavascriptFrameworkController {
      * @param javascriptFrameworkUpdateDto DTO containing new values
      * @return ResponseEntity that contains updated JavascriptFramework if the operation is successful
      */
-    ResponseEntity<?> updateFramework(@PathVariable Long id, @RequestBody @Valid JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto);
+    ResponseEntity<JavascriptFrameworkDto> updateFramework(@PathVariable Long id, @RequestBody @Valid JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto);
 
     /**
      * Delete JavascriptFramework by ID using a DELETE request if the operation is successful.
@@ -88,5 +92,5 @@ public interface IJavascriptFrameworkController {
      * @param text Text to be searched in table
      * @return ResponseEntity that contains found Versions if the operation is successful
      */
-    ResponseEntity<?> fulltextSearch(@RequestParam String text);
+    ResponseEntity<List<JavascriptFrameworkDto>> fulltextSearch(@RequestParam String text);
 }

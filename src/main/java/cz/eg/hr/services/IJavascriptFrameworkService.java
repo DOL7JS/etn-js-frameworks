@@ -2,6 +2,7 @@ package cz.eg.hr.services;
 
 import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
+import cz.eg.hr.dtos.JavascriptFrameworkDto;
 import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
 import cz.eg.hr.dtos.VersionInDto;
 import org.jetbrains.annotations.NotNull;
@@ -10,17 +11,17 @@ import java.util.List;
 
 public interface IJavascriptFrameworkService {
 
-    public Iterable<?> getAllJavascriptFrameworks();
+    Iterable<JavascriptFrameworkDto> getAllJavascriptFrameworks();
 
-    public JavascriptFramework getJavascriptFramework(Long id);
+    JavascriptFrameworkDto getJavascriptFramework(Long id);
 
-    public JavascriptFramework addJavascriptFramework(JavaScriptFrameworkInputDto javaScriptFrameworkInputDto);
+    JavascriptFrameworkDto addJavascriptFramework(JavaScriptFrameworkInputDto javaScriptFrameworkInputDto);
 
-    public JavascriptFramework addVersionToJavascriptFramework(Long javascriptFrameworkId, @NotNull VersionInDto versionInDto);
+    JavascriptFrameworkDto addVersionToJavascriptFramework(Long javascriptFrameworkId, @NotNull VersionInDto versionInDto);
 
-    public JavascriptFramework updateJavascriptFramework(Long id, @NotNull JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto);
+    JavascriptFrameworkDto updateJavascriptFramework(Long id, @NotNull JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto);
 
-    public void deleteFramework(Long id);
+    void deleteFramework(Long id);
 
-    public List<Object> fulltextSearch(String text);
+    List<JavascriptFrameworkDto> fulltextSearch(String text);
 }
