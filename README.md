@@ -86,7 +86,7 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
   </tr>
   <tr>
     <td>Oddělení entit od DTO</td>
-    <td>Bude doplněno</td>
+    <td>2 hodiny</td>
     <td></td>
     <td></td>
   </tr>
