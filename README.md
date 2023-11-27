@@ -76,20 +76,20 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
     <td>Testy - repository, services, controllers</td>
     <td>5 - 6 hodin</td>
     <td>5 hodiny</td>
-    <td>Problém: Injektování ModelMapperu - po pár minutách na internetu použito @Spy, nejvíc času zabralo vymýšlení a mockování </td>
+    <td>Problém: Injektování ModelMapperu - po pár minutách na internetu použito @Spy, nejvíc času zabralo vymýšlení a mockování, testy na service a controllery jsem trochu znal, repository testy jsem dělal poprvé </td>
   </tr>
  
   <tr>
     <td>Oddělení entit od DTO</td>
     <td>2 hodiny</td>
     <td>50 minut</td>
-    <td>Upraveno aby ze service do controlleru chodily dtos a zároveň z controlleru ven taky dtos</td>
+    <td>Upraveno aby mezi service vrstvou a controller vrstvou chodily dtos a zároveň z controlleru ven taky dtos, žádný problém</td>
   </tr>
  <tr>
     <td>Refactoring fulltext search</td>
     <td rowspan="2">40 minut</td>
     <td rowspan="2">45 minut</td>
-    <td>Vytvoření SearchSession pouze v konstruktoru</td>
+    <td>Vytvoření SearchSession pouze v konstruktoru, drobná úprava podoby</td>
   </tr>  
 <tr>
     <td>Generické typy v ResponseEntity a kolekcí</td>
