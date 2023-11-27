@@ -46,7 +46,6 @@ public class JavascriptFrameworkService implements IJavascriptFrameworkService {
         return StreamSupport.stream(javascriptFrameworkRepository.findAll().spliterator(), false).map(entity -> modelMapper.map(entity, JavascriptFrameworkDto.class)).toList();
     }
 
-
     public JavascriptFrameworkDto getJavascriptFramework(Long id) {
         return modelMapper.map(javascriptFrameworkRepository.findById(id).orElseThrow(() -> {
             throw new EntityNotFoundException("Framework with id " + id + " not found.");
@@ -54,6 +53,9 @@ public class JavascriptFrameworkService implements IJavascriptFrameworkService {
     }
 
     public JavascriptFrameworkDto addJavascriptFramework(@NotNull JavaScriptFrameworkInputDto javaScriptFrameworkInputDto) {
+        Objects.requireNonNull(javaScriptFrameworkInputDto);
+        Objects.requireNonNull(javaScriptFrameworkInputDto.getName());
+
         if (javascriptFrameworkRepository.existsByName(javaScriptFrameworkInputDto.getName())) {
             throw new EntityAlreadyExistsException("Framework " + javaScriptFrameworkInputDto.getName() + " already exists.");
         }
@@ -69,6 +71,9 @@ public class JavascriptFrameworkService implements IJavascriptFrameworkService {
 
 
     public JavascriptFrameworkDto addVersionToJavascriptFramework(Long javascriptFrameworkId, @NotNull VersionInDto versionInDto) {
+        Objects.requireNonNull(versionInDto);
+        Objects.requireNonNull(versionInDto.getVersionNumber());
+
         JavascriptFramework javascriptFramework = javascriptFrameworkRepository.findById(javascriptFrameworkId).orElseThrow(() -> new EntityNotFoundException("Framework with id " + javascriptFrameworkId + " not found."));
         boolean versionAlreadyExists = versionRepository.existsByVersionNumberAndJavascriptFramework(versionInDto.getVersionNumber(), javascriptFramework);
         if (versionAlreadyExists) {
@@ -84,6 +89,7 @@ public class JavascriptFrameworkService implements IJavascriptFrameworkService {
 
     public JavascriptFrameworkDto updateJavascriptFramework(Long id, @NotNull JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto) {
         Objects.requireNonNull(javascriptFrameworkUpdateDto);
+        Objects.requireNonNull(javascriptFrameworkUpdateDto.getName());
 
         if (javascriptFrameworkRepository.existsByName(javascriptFrameworkUpdateDto.getName())) {
             throw new EntityAlreadyExistsException("Framework " + javascriptFrameworkUpdateDto.getName() + " already exists.");

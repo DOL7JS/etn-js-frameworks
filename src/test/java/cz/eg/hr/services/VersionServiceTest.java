@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -99,6 +100,21 @@ public class VersionServiceTest {
         VersionInDto versionInDto = new VersionInDto("2.2", LocalDate.of(2021, 1, 1), 5);
 
         assertThrows(EntityNotFoundException.class, () -> {
+            versionService.updateJavascriptFrameworkVersion(1L, versionInDto);
+        });
+    }
+
+    @Test
+    public void givenNullVersionInDto_whenUpdateJavascriptVersion_thenReturnNullPointerException_test() {
+        assertThrows(NullPointerException.class, () -> {
+            versionService.updateJavascriptFrameworkVersion(1L, null);
+        });
+    }
+
+    @Test
+    public void givenNullNameInVersionInDto_whenUpdateJavascriptVersion_thenReturnNullPointerException_test() {
+        VersionInDto versionInDto = new VersionInDto(null, LocalDate.of(2021, 1, 1), 5);
+        assertThrows(NullPointerException.class, () -> {
             versionService.updateJavascriptFrameworkVersion(1L, versionInDto);
         });
     }

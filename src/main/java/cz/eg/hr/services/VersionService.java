@@ -13,6 +13,7 @@ import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -47,6 +48,9 @@ public class VersionService implements IVersionService {
     }
 
     public VersionOutDto updateJavascriptFrameworkVersion(Long id, @NotNull VersionInDto versionInDto) {
+        Objects.requireNonNull(versionInDto);
+        Objects.requireNonNull(versionInDto.getVersionNumber());
+
         Version version = versionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Version with id " + id + " not found."));
         JavascriptFramework javascriptFramework = version.getJavascriptFramework();
         boolean versionAlreadyExists = versionRepository.existsByVersionNumberAndJavascriptFrameworkAndIdIsNot(versionInDto.getVersionNumber(), javascriptFramework, id);

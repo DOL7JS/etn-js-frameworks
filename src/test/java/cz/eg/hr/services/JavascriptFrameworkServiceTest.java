@@ -120,6 +120,22 @@ public class JavascriptFrameworkServiceTest {
     }
 
     @Test
+    public void givenNullJavaScriptFrameworkInputDto_whenAddJavascriptFramework_thenReturnNullPointerException_test() {
+        assertThrows(NullPointerException.class, () -> {
+            javascriptFrameworkService.addJavascriptFramework(null);
+        });
+    }
+
+    @Test
+    public void givenJavaScriptFrameworkInputDtoWithNullName_whenAddJavascriptFramework_thenReturnNullPointerException_test() {
+        JavaScriptFrameworkInputDto javaScriptFrameworkInputDto = new JavaScriptFrameworkInputDto(null);
+
+        assertThrows(NullPointerException.class, () -> {
+            javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
+        });
+    }
+
+    @Test
     public void givenVersionInDto_whenAddVersionToJavascriptFramework_thenReturnJavascriptFrameworkWithAddedVersion_test() {
         JavascriptFramework javascriptFramework = new JavascriptFramework("React");
         javascriptFramework.setId(1L);
@@ -143,6 +159,21 @@ public class JavascriptFrameworkServiceTest {
     public void givenVersionInDto_whenAddVersionToJavascriptFramework_thenReturnEntityNotFoundException_test() {
         VersionInDto versionInDto = new VersionInDto("1.1", LocalDate.of(2020, 1, 1), 4);
         assertThrows(EntityNotFoundException.class, () -> {
+            javascriptFrameworkService.addVersionToJavascriptFramework(1L, versionInDto);
+        });
+    }
+
+    @Test
+    public void givenNullVersionInDto_whenAddVersionToJavascriptFramework_thenReturnNullPointerException_test() {
+        assertThrows(NullPointerException.class, () -> {
+            javascriptFrameworkService.addVersionToJavascriptFramework(1L, null);
+        });
+    }
+
+    @Test
+    public void givenVersionInDtoWithNullVersionNumber_whenAddVersionToJavascriptFramework_thenReturnNullPointerException_test() {
+        VersionInDto versionInDto = new VersionInDto(null, LocalDate.of(2020, 1, 1), 4);
+        assertThrows(NullPointerException.class, () -> {
             javascriptFrameworkService.addVersionToJavascriptFramework(1L, versionInDto);
         });
     }
@@ -179,9 +210,17 @@ public class JavascriptFrameworkServiceTest {
     }
 
     @Test
-    public void givenNull_whenUpdateJavascriptFramework_thenReturnNullPointerException_test() {
+    public void givenNullJavascriptFrameworkUpdateDto_whenUpdateJavascriptFramework_thenReturnNullPointerException_test() {
         assertThrows(NullPointerException.class, () -> {
             javascriptFrameworkService.updateJavascriptFramework(1L, null);
+        });
+    }
+
+    @Test
+    public void givenJavascriptFrameworkUpdateDtoWithNameNull_whenUpdateJavascriptFramework_thenReturnNullPointerException_test() {
+        JavascriptFrameworkUpdateDto javascriptFrameworkUpdateDto = new JavascriptFrameworkUpdateDto(null);
+        assertThrows(NullPointerException.class, () -> {
+            javascriptFrameworkService.updateJavascriptFramework(1L, javascriptFrameworkUpdateDto);
         });
     }
 
