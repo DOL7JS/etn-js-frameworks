@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles(profiles = "test")
-public class JavascriptFrameworkTest {
+public class JavascriptFrameworkServiceTest {
 
     @InjectMocks
     private JavascriptFrameworkService javascriptFrameworkService;
