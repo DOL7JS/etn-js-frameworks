@@ -13,7 +13,7 @@ public interface IVersionService {
      * Method to get one Version by id
      *
      * @param id ID of Version to be returned.
-     * @return Return {@link VersionOutDto} mapped to VersionOutDto if Version is found by id
+     * @return Return {@link Version} mapped to VersionOutDto if is found by id
      * @throws EntityNotFoundException If entity Version is not found
      */
     VersionOutDto getVersion(Long id);
@@ -26,14 +26,14 @@ public interface IVersionService {
     Iterable<VersionOutDto> getAllVersions();
 
     /**
-     * Method that updates Version in database. Version will be updated if exists and in  Javascript framework
+     * Method that updates Version in database. Version will be updated if exists and if in corresponding Javascript framework
      * is not version with same versionNumber.
      *
      * @param id           ID of Version to be updated.
      * @param versionInDto DTO with values that will update Version
      * @return Updated Version mapped to VersionOutDto
      * @throws EntityNotFoundException      If Version is not found
-     * @throws EntityAlreadyExistsException If Version exists in current Javascript framework with same versionNumber
+     * @throws EntityAlreadyExistsException If Version exists in corresponding Javascript framework with same versionNumber
      */
     VersionOutDto updateJavascriptFrameworkVersion(Long id, VersionInDto versionInDto);
 

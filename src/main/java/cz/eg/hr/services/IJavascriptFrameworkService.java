@@ -13,14 +13,14 @@ import java.util.List;
 
 public interface IJavascriptFrameworkService {
     /**
-     * Method to get all JavascriptFrameworks in database
+     * Method to get all JavascriptFrameworks from database
      *
      * @return All JavascriptFrameworks in database mapped to JavascriptFrameworkDto
      */
     Iterable<JavascriptFrameworkDto> getAllJavascriptFrameworks();
 
     /**
-     * Method to get one JavascriptFrameworks by id
+     * Method to get one JavascriptFramework by id
      *
      * @param id ID of JavascriptFramework to be returned
      * @return One {@link JavascriptFramework} mapped to JavascriptFrameworkDto if is found by id
@@ -39,7 +39,7 @@ public interface IJavascriptFrameworkService {
     JavascriptFrameworkDto addJavascriptFramework(JavaScriptFrameworkInputDto javaScriptFrameworkInputDto);
 
     /**
-     * Method to add Version to JavascriptFramework if Version does not exist in current JavascriptFramework
+     * Method to add Version to JavascriptFramework if Version(versionNumber) does not exist in current JavascriptFramework
      *
      * @param javascriptFrameworkId ID of JavascriptFramework to which will be Version added
      * @param versionInDto          Version to be added to JavascriptFramework

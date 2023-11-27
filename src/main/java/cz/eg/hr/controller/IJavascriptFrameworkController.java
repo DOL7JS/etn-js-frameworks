@@ -1,6 +1,5 @@
 package cz.eg.hr.controller;
 
-import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
 import cz.eg.hr.dtos.JavascriptFrameworkDto;
 import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
@@ -43,6 +42,7 @@ public interface IJavascriptFrameworkController {
     /**
      * Add JavascriptFramework using a POST request if the operation is successful.
      * It will add JavascriptFramework if JavaScriptFrameworkInputDto contains only name,
+     * that does not already exist
      * Returns with status codes:
      * 200: successfully added JavascriptFramework
      * 400: JavascriptFramework name of JavascriptFramework already exists
@@ -59,7 +59,7 @@ public interface IJavascriptFrameworkController {
      * 400: Version with same versionNumber already exists in JavascriptFramework
      *
      * @param id           ID of JavascriptFramework to which will be Version added
-     * @param versionInDto DTO if Version to be added to JavascriptFramework
+     * @param versionInDto DTO of Version to be added to JavascriptFramework
      * @return ResponseEntity that contains JavascriptFramework mapped to JavascriptFrameworkDto if the operation is successful
      */
     ResponseEntity<JavascriptFrameworkDto> addVersionToFramework(@PathVariable Long id, @RequestBody @Valid VersionInDto versionInDto);
