@@ -55,7 +55,7 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
     <td>Využití ControllerAdvice</td>
     <td rowspan=4>1 hodina</td>
     <td rowspan=4>1 hodina</td>
-    <td rowspan=4></td>  
+    <td rowspan=4>Bez jakýchkoli problémů, se vším jsem se už setkal, PATCH jsem si jen našel proč by tam měl být, pouze jsem zvyklejší na PUT</td>  
   </tr>
   <tr>
     <td>Návratové http kódy</td>
@@ -70,13 +70,13 @@ Hodnotíme hlavně funkčnost, správnost a udržitelnost kódu. Řešení není
     <td>Dodělání interface(service, controller) + javadoc</td>
     <td>45 minut</td>
     <td>1 hodina a 45 minut</td>
-    <td>Zdržení kvůli psaní javadoc - nečekal jsem že mi to zabere tolik času</td>
+    <td>Zdržení kvůli psaní javadoc - nečekal jsem že mi to zabere tolik času, jinak bez problémů</td>
   </tr>
   <tr>
     <td>Testy - repository, services, controllers</td>
     <td>5 - 6 hodin</td>
     <td>5 hodiny</td>
-    <td>Problém: Injektování ModelMapperu - po pár minutách na internetu použito @Spy </td>
+    <td>Problém: Injektování ModelMapperu - po pár minutách na internetu použito @Spy, nejvíc času zabralo vymýšlení a mockování </td>
   </tr>
  
   <tr>
