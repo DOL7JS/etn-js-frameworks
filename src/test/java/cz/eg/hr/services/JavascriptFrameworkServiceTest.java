@@ -79,21 +79,21 @@ public class JavascriptFrameworkServiceTest {
     @Test
     public void givenJavaScriptFrameworkInputDtoWithVersion_whenAddJavascriptFramework_thenReturnNewJavascriptFramework_test() {
         JavaScriptFrameworkInputDto javaScriptFrameworkInputDto = new JavaScriptFrameworkInputDto("React", "1.1", LocalDate.of(2020, 1, 1), 1);
-        JavascriptFramework javascriptFramework1 = new JavascriptFramework(javaScriptFrameworkInputDto.getName());
+        JavascriptFramework javascriptFramework = new JavascriptFramework(javaScriptFrameworkInputDto.getName());
         Version version = new Version(javaScriptFrameworkInputDto.getVersionNumber(), javaScriptFrameworkInputDto.getEndOfSupport(), javaScriptFrameworkInputDto.getStars());
-        version.setJavascriptFramework(javascriptFramework1);
+        version.setJavascriptFramework(javascriptFramework);
 
-        when(javascriptFrameworkRepository.save(any(JavascriptFramework.class))).thenReturn(javascriptFramework1);
+        when(javascriptFrameworkRepository.save(any(JavascriptFramework.class))).thenReturn(javascriptFramework);
         when(javascriptFrameworkRepository.existsByName(anyString())).thenReturn(false);
         when(versionRepository.save(any(Version.class))).thenReturn(version);
 
-        JavascriptFrameworkDto javascriptFramework = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
+        JavascriptFrameworkDto javascriptFrameworkReturned = javascriptFrameworkService.addJavascriptFramework(javaScriptFrameworkInputDto);
 
-        assertEquals(javaScriptFrameworkInputDto.getName(), javascriptFramework.getName());
-        assertEquals(1, javascriptFramework.getVersions().size());
-        assertTrue(javascriptFramework.getVersions().stream().anyMatch(v -> v.getVersionNumber().equals(javaScriptFrameworkInputDto.getVersionNumber())));
-        assertTrue(javascriptFramework.getVersions().stream().anyMatch(v -> v.getStars() == javaScriptFrameworkInputDto.getStars()));
-        assertTrue(javascriptFramework.getVersions().stream().anyMatch(v -> v.getEndOfSupport().equals(javaScriptFrameworkInputDto.getEndOfSupport())));
+        assertEquals(javaScriptFrameworkInputDto.getName(), javascriptFrameworkReturned.getName());
+        assertEquals(1, javascriptFrameworkReturned.getVersions().size());
+        assertTrue(javascriptFrameworkReturned.getVersions().stream().anyMatch(v -> v.getVersionNumber().equals(javaScriptFrameworkInputDto.getVersionNumber())));
+        assertTrue(javascriptFrameworkReturned.getVersions().stream().anyMatch(v -> v.getStars() == javaScriptFrameworkInputDto.getStars()));
+        assertTrue(javascriptFrameworkReturned.getVersions().stream().anyMatch(v -> v.getEndOfSupport().equals(javaScriptFrameworkInputDto.getEndOfSupport())));
     }
 
     @Test
