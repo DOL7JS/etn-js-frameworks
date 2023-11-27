@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -37,7 +36,7 @@ public class VersionServiceTest {
     @Spy
     private ModelMapper modelMapper;
     @Mock
-    private FulltextSearchService<VersionOutDto> fulltextSearchService;
+    private FulltextSearchService<Version> fulltextSearchService;
 
     @Test
     public void whenGetAllVersions_thenReturnListOfAllVersions_test() {
@@ -157,9 +156,9 @@ public class VersionServiceTest {
 
     @Test
     public void givenSearchText_whenFulltextSearch_thenReturnListOfFoundVersion_test() {
-        VersionOutDto v1 = new VersionOutDto("1.2.3.4", LocalDate.of(2020, 1, 1), 4);
+        Version v1 = new Version("1.2.3.4", LocalDate.of(2020, 1, 1), 4);
 
-        when(fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, v1.getVersionNumber(), VersionOutDto.class)).thenReturn(List.of(v1));
+        when(fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, v1.getVersionNumber(), Version.class)).thenReturn(List.of(v1));
 
         List<VersionOutDto> list = versionService.fulltextSearch(v1.getVersionNumber());
 

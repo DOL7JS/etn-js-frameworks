@@ -40,7 +40,7 @@ public class JavascriptFrameworkServiceTest {
     @Mock
     private JavascriptFrameworkRepository javascriptFrameworkRepository;
     @Mock
-    private FulltextSearchService<JavascriptFrameworkDto> fulltextSearchService;
+    private FulltextSearchService<JavascriptFramework> fulltextSearchService;
     @Spy
     private ModelMapper modelMapper;
 
@@ -267,10 +267,9 @@ public class JavascriptFrameworkServiceTest {
 
     @Test
     public void givenSearchText_whenFulltextSearch_thenReturnListOfFoundJavascriptFramework_test() {
-        JavascriptFrameworkDto javascriptFramework1 = new JavascriptFrameworkDto();
-        javascriptFramework1.setName("React");
+        JavascriptFramework javascriptFramework1 = new JavascriptFramework("React");
 
-        when(fulltextSearchService.fulltextSearch(new String[]{"name"}, javascriptFramework1.getName(), JavascriptFrameworkDto.class)).thenReturn(List.of(javascriptFramework1));
+        when(fulltextSearchService.fulltextSearch(new String[]{"name"}, javascriptFramework1.getName(), JavascriptFramework.class)).thenReturn(List.of(javascriptFramework1));
 
         List<JavascriptFrameworkDto> fulltextSearch = javascriptFrameworkService.fulltextSearch(javascriptFramework1.getName());
         assertEquals(1, fulltextSearch.size());

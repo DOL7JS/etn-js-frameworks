@@ -27,9 +27,9 @@ public class VersionService implements IVersionService {
 
     private final VersionRepository versionRepository;
     private final ModelMapper modelMapper;
-    private final FulltextSearchService<VersionOutDto> fulltextSearchService;
+    private final FulltextSearchService<Version> fulltextSearchService;
 
-    public VersionService(VersionRepository versionRepository, ModelMapper modelMapperIn, FulltextSearchService<VersionOutDto> fulltextSearchService) {
+    public VersionService(VersionRepository versionRepository, ModelMapper modelMapperIn, FulltextSearchService<Version> fulltextSearchService) {
         this.versionRepository = versionRepository;
         this.modelMapper = modelMapperIn;
         this.fulltextSearchService = fulltextSearchService;
@@ -55,7 +55,7 @@ public class VersionService implements IVersionService {
         JavascriptFramework javascriptFramework = version.getJavascriptFramework();
         boolean versionAlreadyExists = versionRepository.existsByVersionNumberAndJavascriptFrameworkAndIdIsNot(versionInDto.getVersionNumber(), javascriptFramework, id);
         if (versionAlreadyExists) {
-            throw new EntityAlreadyExistsException("Version " + versionInDto.getVersionNumber() + " already exists in js framework " + javascriptFramework.getName());
+            throw new EntityAlreadyExistsException("Version " + versionInDto.getVersionNumber() + " already exists in js framework with id " + javascriptFramework.getId());
         }
         Version versionUpdated = modelMapper.map(versionInDto, Version.class);
         versionUpdated.setId(version.getId());
@@ -70,6 +70,7 @@ public class VersionService implements IVersionService {
     }
 
     public List<VersionOutDto> fulltextSearch(String text) {
-        return fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, text, VersionOutDto.class);
+        List<Version> versions = fulltextSearchService.fulltextSearch(new String[]{"stars", "endOfSupport", "versionNumber"}, text, Version.class);
+        return versions.stream().map(item -> modelMapper.map(item, VersionOutDto.class)).collect(Collectors.toList());
     }
 }

@@ -3,10 +3,7 @@ package cz.eg.hr.services;
 
 import cz.eg.hr.data.JavascriptFramework;
 import cz.eg.hr.data.Version;
-import cz.eg.hr.dtos.JavaScriptFrameworkInputDto;
-import cz.eg.hr.dtos.JavascriptFrameworkDto;
-import cz.eg.hr.dtos.JavascriptFrameworkUpdateDto;
-import cz.eg.hr.dtos.VersionInDto;
+import cz.eg.hr.dtos.*;
 import cz.eg.hr.repository.JavascriptFrameworkRepository;
 import cz.eg.hr.repository.VersionRepository;
 import cz.eg.hr.rest.exceptions.EntityAlreadyExistsException;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -31,10 +29,10 @@ public class JavascriptFrameworkService implements IJavascriptFrameworkService {
 
     private final JavascriptFrameworkRepository javascriptFrameworkRepository;
     private final VersionRepository versionRepository;
-    private final FulltextSearchService<JavascriptFrameworkDto> fulltextSearchService;
+    private final FulltextSearchService<JavascriptFramework> fulltextSearchService;
     private final ModelMapper modelMapper;
 
-    public JavascriptFrameworkService(JavascriptFrameworkRepository javascriptFrameworkRepository, VersionRepository versionRepository, FulltextSearchService<JavascriptFrameworkDto> fulltextSearchService, ModelMapper modelMapper) {
+    public JavascriptFrameworkService(JavascriptFrameworkRepository javascriptFrameworkRepository, VersionRepository versionRepository, FulltextSearchService<JavascriptFramework> fulltextSearchService, ModelMapper modelMapper) {
         this.javascriptFrameworkRepository = javascriptFrameworkRepository;
         this.versionRepository = versionRepository;
         this.fulltextSearchService = fulltextSearchService;
@@ -107,7 +105,8 @@ public class JavascriptFrameworkService implements IJavascriptFrameworkService {
     }
 
     public List<JavascriptFrameworkDto> fulltextSearch(String text) {
-        return fulltextSearchService.fulltextSearch(new String[]{"name"}, text, JavascriptFrameworkDto.class);
+        List<JavascriptFramework> javascriptFrameworks = fulltextSearchService.fulltextSearch(new String[]{"name"}, text, JavascriptFramework.class);
+        return javascriptFrameworks.stream().map(item -> modelMapper.map(item, JavascriptFrameworkDto.class)).collect(Collectors.toList());
     }
 }
 
